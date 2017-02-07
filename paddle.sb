@@ -1,0 +1,59 @@
+GraphicsWindow.CanResize = "FALSE"
+GraphicsWindow.Width = 800
+GraphicsWindow.Height = 600
+GraphicsWindow.BrushColor = "cyan"
+paddle = Shapes.AddRectangle(120, 12)
+ball = Shapes.AddEllipse(16, 16)
+
+Shapes.Move(ball, 150, 10)
+GraphicsWindow.MouseMove = OnMouseMove
+x = 150
+y = 10
+deltaX = 0
+deltaY = 2
+GraphicsWindow.PenWidth = 1
+kreska = Shapes.AddLine(0, 0, 0, 800)
+kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
+RunLoop:
+  x = x + deltaX
+  y = y + deltaY
+  
+  gw = GraphicsWindow.Width
+  gh = GraphicsWindow.Height
+  If (x >= gw - 16 Or x <= 0) Then
+    deltaX = -deltaX
+  EndIf
+  If (y <= 0) Then
+    deltaY = -deltaY
+  EndIf
+ 
+  padX = Shapes.GetLeft(paddle)
+  If (y = gh - 28 And x + 16 >= padX And x <= padX + 120) Then
+    deltaY = -deltaY
+    If (x+8) > padX + 24 And (x+8) < padX + 96 Then
+      If (x+8) < padX + 46 Then
+        deltaX = deltaX - 0.3
+      ElseIf (x+8) > padX + 74 Then
+        deltaX = deltaX + 0.3
+      EndIf
+    ElseIf (x+8) <= padX + 24 Then
+      deltaX = deltaX - 0.5
+    ElseIf (x+8) >= padX + 96 Then
+      deltaX = deltaX + 0.5  
+    EndIf
+  EndIf
+
+Shapes.Move(ball, x, y)
+Shapes.Move(kreska, x, y)
+Shapes.Move(kreskaprawa, x + 16, y)
+  Program.Delay(5)
+  
+  If (y < gh) Then
+    Goto RunLoop
+  EndIf  
+
+
+Sub OnMouseMove
+  paddleX = GraphicsWindow.MouseX
+  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
+EndSub
