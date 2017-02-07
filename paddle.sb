@@ -1,3 +1,4 @@
+'Wstępny skrypt
 GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
