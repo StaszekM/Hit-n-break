@@ -3,56 +3,105 @@ GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
-paddle = Shapes.AddRectangle(120, 12)
-ball = Shapes.AddEllipse(16, 16)
-
-Shapes.Move(ball, 150, 10)
+paddleWidth = 120
+paddle = Shapes.AddRectangle(paddleWidth, 12)
+ballWidth = 30
+ball = Shapes.AddEllipse(ballWidth, ballWidth)
 GraphicsWindow.MouseMove = OnMouseMove
-x = 150
-y = 10
+
+'x, y - pozycja początkowa kulki
+x = 69
+y = 70
+Shapes.Move(ball, x, y)
+
+'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
 deltaX = 0
 deltaY = 2
 GraphicsWindow.PenWidth = 1
+
+'Kreski pomocnicze
 kreska = Shapes.AddLine(0, 0, 0, 800)
 kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
+kreskagora = Shapes.AddLine(0,0,800,0)
+kreskadol = Shapes.AddLine(0,0,800,0)
+
+'Pierwsza cegiełka yayyyy!
+ceglaX = 100
+ceglaY = 300
+ceglaWidth = 80
+ceglaHeight = 90
+cegla = Shapes.AddRectangle(ceglaWidth, ceglaHeight)
+Shapes.Move(cegla, ceglaX, ceglaY)
+
+'Pętla główna programu
 RunLoop:
-  x = x + deltaX
-  y = y + deltaY
   
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
-  If (x >= gw - 16 Or x <= 0) Then
+  
+  'Pomocnicze zmienne przeciw konfliktom
+  hasHitX = "false"
+  hasHitY = "false"
+  
+  'Blok kodu determinujący odbicie od ściany
+  If (x >= gw - (ballWidth) Or x <= 0) Then
     deltaX = -deltaX
   EndIf
   If (y <= 0) Then
     deltaY = -deltaY
   EndIf
- 
+  
+  'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
-  If (y = gh - 28 And x + 16 >= padX And x <= padX + 120) Then
+  If (y = gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
     deltaY = -deltaY
-    If (x+8) > padX + 24 And (x+8) < padX + 96 Then
-      If (x+8) < padX + 46 Then
+    If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
+      If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
         deltaX = deltaX - 0.3
-      ElseIf (x+8) > padX + 74 Then
+      ElseIf (x+(ballWidth/2)) > padX + (paddleWidth*3/5) + 2 Then
         deltaX = deltaX + 0.3
       EndIf
-    ElseIf (x+8) <= padX + 24 Then
+    ElseIf (x+(ballWidth/2)) <= padX + (paddleWidth/5) Then
       deltaX = deltaX - 0.5
-    ElseIf (x+8) >= padX + 96 Then
+    ElseIf (x+(ballWidth/2)) >= padX + (paddleWidth*4/5) Then
       deltaX = deltaX + 0.5  
     EndIf
   EndIf
+  
+  'Odbicie od cegiełki
+  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y = ceglaY + ceglaHeight then
+    hasHitY = "true"
+  endIf
+  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y + ballWidth = ceglaY then
+    hasHitY = "true"
+  endIf
+  If x + ballWidth = ceglaX And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+    hasHitX = "true"
+  endIf
+  If x + ballWidth = ceglaX + ceglaWidth And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+    hasHitX = "true"
+  endIf
+  
+  'Ostateczne przesunięcie kulki
+  If (hasHitY) then
+  deltaY = -deltaY
+  endIf 
+  If (hasHitX) then
+  deltaX = -deltaX
+  endif
 
-Shapes.Move(ball, x, y)
-Shapes.Move(kreska, x, y)
-Shapes.Move(kreskaprawa, x + 16, y)
+  x = x + deltaX
+  y = y + deltaY
+  Shapes.Move(ball, x, y)
+  Shapes.Move(kreska, x, 0)
+  Shapes.Move(kreskaprawa, x + ballWidth, 0)
+  Shapes.Move(kreskagora,0, y)
+  Shapes.Move(kreskadol, 0, y + ballWidth)
   Program.Delay(5)
   
   If (y < gh) Then
     Goto RunLoop
   EndIf  
-
 
 Sub OnMouseMove
   paddleX = GraphicsWindow.MouseX
