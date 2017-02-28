@@ -10,8 +10,8 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 GraphicsWindow.MouseMove = OnMouseMove
 
 'x, y - pozycja początkowa kulki
-x = 69
-y = 70
+x = 140
+y = 150
 Shapes.Move(ball, x, y)
 
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
@@ -27,7 +27,7 @@ kreskadol = Shapes.AddLine(0,0,800,0)
 
 'Pierwsza cegiełka yayyyy!
 ceglaX = 100
-ceglaY = 300
+ceglaY = 10
 ceglaWidth = 80
 ceglaHeight = 90
 cegla = Shapes.AddRectangle(ceglaWidth, ceglaHeight)
@@ -38,7 +38,7 @@ RunLoop:
   
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
-  
+
   'Pomocnicze zmienne przeciw konfliktom
   hasHitX = "false"
   hasHitY = "false"
@@ -53,7 +53,8 @@ RunLoop:
   
   'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
-  If (y = gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
+  If (y >= gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
+    y = gh - (ballWidth + 12)
     deltaY = -deltaY
     If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
       If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
@@ -69,16 +70,24 @@ RunLoop:
   EndIf
   
   'Odbicie od cegiełki
-  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y = ceglaY + ceglaHeight then
+  'Dolna ściana
+  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y <= ceglaY + ceglaHeight And y > ceglaY + Math.Abs(deltaY)  then
+    y = ceglaY + ceglaHeight
     hasHitY = "true"
   endIf
-  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y + ballWidth = ceglaY then
+  'Górna ściana
+  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y + ballWidth >= ceglaY And y + ballWidth < ceglaY + Math.Abs(deltaY) then
+    y = ceglaY - ballWidth
     hasHitY = "true"
   endIf
-  If x + ballWidth = ceglaX And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+  'Lewa ściana
+  If x + ballWidth >= ceglaX And x + ballWidth < ceglaX + Math.Abs(deltaX) And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+    x = ceglaX - ballWidth
     hasHitX = "true"
   endIf
-  If x + ballWidth = ceglaX + ceglaWidth And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+  'Prawa ściana
+  If x <= ceglaX + ceglaWidth And x > ceglaX + ceglaWidth - Math.Abs(deltaX)  And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
+    x = ceglaX + ceglaWidth
     hasHitX = "true"
   endIf
   
