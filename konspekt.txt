@@ -1,0 +1,23 @@
+Cegie³ki
+Punkty za cegie³ki
+Poziomy
+Cegie³ki z bonusami/cegie³ki specjalne
+	Pi³ka lata szybciej
+	Pi³ka lata wolniej
+	Szersza/wê¿sza platforma
+	Wiêcej pi³ek
+	2x punkty
+	Lasery
+	Pi³ka wiêksza/mniejsza
+	Niezniszczalne cegie³ki
+	Celownik
+Animacje
+Kolorowe plamki przypominaj¹ce pi³kê
+Grafika
+DŸwiêki/muzyka
+Rzeczy do odblokowania za punkty
+	Platformy
+	Pi³eczki
+	T³a
+	Muzyka
+[GOTOWE] Zmieniæ algorytm odbijania
