@@ -8,15 +8,14 @@ paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 30
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
 GraphicsWindow.MouseMove = OnMouseMove
-
 'x, y - pozycja początkowa kulki
-x = 140
-y = 150
+x = 610
+y = 430
 Shapes.Move(ball, x, y)
 
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = 0
-deltaY = 2
+deltaX = -2
+deltaY = -2
 GraphicsWindow.PenWidth = 1
 
 'Kreski pomocnicze
@@ -25,13 +24,42 @@ kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
 kreskagora = Shapes.AddLine(0,0,800,0)
 kreskadol = Shapes.AddLine(0,0,800,0)
 
+
 'Pierwsza cegiełka yayyyy!
-ceglaX = 100
-ceglaY = 10
-ceglaWidth = 80
-ceglaHeight = 90
-cegla = Shapes.AddRectangle(ceglaWidth, ceglaHeight)
-Shapes.Move(cegla, ceglaX, ceglaY)
+
+cegla1[0] = 100
+cegla1[1] = 200
+cegla1[2] = 50
+cegla1[3] = 20
+cegla1[4] = "true"
+
+cegla2[0] = 150
+cegla2[1] = 200
+cegla2[2] = 50
+cegla2[3] = 20
+cegla2[4] = "true"
+
+cegla3[0] = 200
+cegla3[1] = 200
+cegla3[2] = 50
+cegla3[3] = 20
+cegla3[4] = "true"
+
+cegla4[0] = 250
+cegla4[1] = 200
+cegla4[2] = 50
+cegla4[3] = 20
+cegla4[4] = "true"
+
+cegly[0] = cegla1
+cegly[1] = cegla2
+cegly[2] = cegla3
+cegly[3] = cegla4
+
+For i = 0 to Array.GetItemCount(cegly) - 1
+    graficzneCegly[i] = Shapes.AddRectangle(cegly[i][2], cegly[i][3])
+    Shapes.Move(graficzneCegly[i], cegly[i][0], cegly[i][1])
+endFor 
 
 'Pętla główna programu
 RunLoop:
@@ -69,27 +97,71 @@ RunLoop:
     EndIf
   EndIf
   
+  For i = 0 to Array.GetItemCount(cegly) - 1
+    'Odbicie od cegiełki
+    'Dolna ściana
+    If x + ballWidth >= cegly[i][0] And x <= (cegly[i][0] + cegly[i][2]) And y <= cegly[i][1] + cegly[i][3] And y > cegly[i][1] + cegly[i][3] - Math.Abs(deltaY) And cegly[i][4]  then
+      y = cegly[i][1] + cegly[i][3]
+      hasHitY = "true"
+      cegly[i][4] = "false"
+    endIf
+    'Górna ściana
+    If x + ballWidth >= cegly[i][0] And x <= (cegly[i][0] + cegly[i][2]) And y + ballWidth >= cegly[i][1] And y + ballWidth < cegly[i][1] + Math.Abs(deltaY) And cegly[i][4] then
+      y = cegly[i][1] - ballWidth
+      hasHitY = "true"
+      cegly[i][4] = "false"
+    endIf
+    'Lewa ściana
+    If x + ballWidth >= cegly[i][0] And x + ballWidth < cegly[i][0] + Math.Abs(deltaX) And y <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][1] And cegly[i][4] Then 
+      x = cegly[i][0] - ballWidth
+      hasHitX = "true"
+      cegly[i][4] = "false"
+    endIf
+    'Prawa ściana
+    If x <= cegly[i][0] + cegly[i][2] And x > cegly[i][0] + cegly[i][2] - Math.Abs(deltaX)  And y <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][1] And cegly[i][4] then
+      x = cegly[i][0] + cegly[i][2]
+      hasHitX = "true"
+      cegly[i][4] = "false"
+    endIf
+    If cegly[i][4] <> "true" then
+    Shapes.Remove(graficzneCegly[i])
+    endIf
+  EndFor
+  
+  
+  
+  
   'Odbicie od cegiełki
   'Dolna ściana
-  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y <= ceglaY + ceglaHeight And y > ceglaY + Math.Abs(deltaY)  then
-    y = ceglaY + ceglaHeight
-    hasHitY = "true"
-  endIf
+  'If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y <= ceglaY + ceglaHeight And y > ceglaY + ceglaHeight - Math.Abs(deltaY) And czyCeglaWlaczona  then
+  '  y = ceglaY + ceglaHeight
+  '  hasHitY = "true"
+  '  czyCeglaWlaczona = "false"
+  'endIf
   'Górna ściana
-  If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y + ballWidth >= ceglaY And y + ballWidth < ceglaY + Math.Abs(deltaY) then
-    y = ceglaY - ballWidth
-    hasHitY = "true"
-  endIf
+  'If x + ballWidth >= ceglaX And x <= (ceglaX + ceglaWidth) And y + ballWidth >= ceglaY And y + ballWidth < ceglaY + Math.Abs(deltaY) And czyCeglaWlaczona then
+  '  y = ceglaY - ballWidth
+  '  hasHitY = "true"
+  '  czyCeglaWlaczona = "false"
+  'endIf
   'Lewa ściana
-  If x + ballWidth >= ceglaX And x + ballWidth < ceglaX + Math.Abs(deltaX) And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
-    x = ceglaX - ballWidth
-    hasHitX = "true"
-  endIf
+  'If x + ballWidth >= ceglaX And x + ballWidth < ceglaX + Math.Abs(deltaX) And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY And czyCeglaWlaczona Then 
+  '  x = ceglaX - ballWidth
+  '  hasHitX = "true"
+  '  czyCeglaWlaczona = "false"
+  'endIf
   'Prawa ściana
-  If x <= ceglaX + ceglaWidth And x > ceglaX + ceglaWidth - Math.Abs(deltaX)  And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY then
-    x = ceglaX + ceglaWidth
-    hasHitX = "true"
-  endIf
+  'If x <= ceglaX + ceglaWidth And x > ceglaX + ceglaWidth - Math.Abs(deltaX)  And y <= (ceglaY + ceglaHeight) And y + ballWidth >= ceglaY And czyCeglaWlaczona then
+  '  x = ceglaX + ceglaWidth
+  '  hasHitX = "true"
+  '  czyCeglaWlaczona = "false"
+  'endIf
+  
+  
+  
+  
+  
+  
   
   'Ostateczne przesunięcie kulki
   If (hasHitY) then
@@ -106,6 +178,7 @@ RunLoop:
   Shapes.Move(kreskaprawa, x + ballWidth, 0)
   Shapes.Move(kreskagora,0, y)
   Shapes.Move(kreskadol, 0, y + ballWidth)
+  
   Program.Delay(5)
   
   If (y < gh) Then
