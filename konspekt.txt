@@ -1,23 +1,23 @@
-Cegie³ki
-Punkty za cegie³ki
+[GOTOWE] CegieÅ‚ki
+Punkty za cegieÅ‚ki
 Poziomy
-Cegie³ki z bonusami/cegie³ki specjalne
-	Pi³ka lata szybciej
-	Pi³ka lata wolniej
-	Szersza/wê¿sza platforma
-	Wiêcej pi³ek
+CegieÅ‚ki z bonusami/cegieÅ‚ki specjalne
+	PiÅ‚ka lata szybciej
+	PiÅ‚ka lata wolniej
+	Szersza/wÄ™Å¼sza platforma
+	WiÄ™cej piÅ‚ek
 	2x punkty
 	Lasery
-	Pi³ka wiêksza/mniejsza
-	Niezniszczalne cegie³ki
+	PiÅ‚ka wiÄ™ksza/mniejsza
+	Niezniszczalne cegieÅ‚ki
 	Celownik
 Animacje
-Kolorowe plamki przypominaj¹ce pi³kê
+Kolorowe plamki przypominajÄ…ce piÅ‚kÄ™
 Grafika
-DŸwiêki/muzyka
+DÅºwiÄ™ki/muzyka
 Rzeczy do odblokowania za punkty
 	Platformy
-	Pi³eczki
-	T³a
+	PiÅ‚eczki
+	TÅ‚a
 	Muzyka
-[GOTOWE] Zmieniæ algorytm odbijania
+[GOTOWE] ZmieniÄ‡ algorytm odbijania
