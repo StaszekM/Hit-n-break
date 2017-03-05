@@ -1,3 +1,5 @@
+
+
 'Wstępny skrypt
 GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
@@ -8,7 +10,7 @@ paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 60
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
 gamePlays = "true"
-levelFilePath = "E:\Użytkownicy\Staszek\Pulpit\temp.txt"
+levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 'x, y - pozycja początkowa kulki
@@ -30,18 +32,18 @@ kreskadol = Shapes.AddLine(0,0,800,0)
 'Pierwsza cegiełka yayyyy!
 For i = 2 to File.ReadLine(levelFilePath, 1) + 1
   linijka = File.ReadLine(levelFilePath, i)
-  For u = 0 to 2
+  cegly[i-2][0] = "true"
+  For u = 1 to 3
     cegly[i-2][u] = Text.GetSubText(linijka, 1, Text.GetIndexOf(linijka, ",")-1)
     linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
   endFor
-  cegly[i-2][3] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
-  cegly[i-2][4] = "true"
+  cegly[i-2][4] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
 endFor 
 
 
 For i = 0 to Array.GetItemCount(cegly) - 1
-    graficzneCegly[i] = Shapes.AddRectangle(cegly[i][2], cegly[i][3])
-    Shapes.Move(graficzneCegly[i], cegly[i][0], cegly[i][1])
+    graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
+    Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
 endFor 
 
 Timer.Interval = 5
@@ -93,37 +95,37 @@ Sub OnTick
   For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
     'Dolna ściana
-    If cegly[i][4] Then
-    If x + ballWidth >= cegly[i][0] And x <= (cegly[i][0] + cegly[i][2]) And y <= cegly[i][1] + cegly[i][3] And y > cegly[i][1] + cegly[i][3] - Math.Abs(deltaY) then
-      y = cegly[i][1] + cegly[i][3]
+    If cegly[i][0] Then
+    If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
+      y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
       score = score + 1
       Sound.PlayClick()
-      cegly[i][4] = "false"
+      cegly[i][0] = "false"
     'Górna ściana
-    ElseIf x + ballWidth >= cegly[i][0] And x <= (cegly[i][0] + cegly[i][2]) And y + ballWidth >= cegly[i][1] And y + ballWidth < cegly[i][1] + Math.Abs(deltaY) then
-      y = cegly[i][1] - ballWidth
+    ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
+      y = cegly[i][2] - ballWidth
       hasHitY = "true"
       score = score + 1
       Sound.PlayClick()
-      cegly[i][4] = "false"
+      cegly[i][0] = "false"
     'Lewa ściana
-    ElseIf x + ballWidth >= cegly[i][0] And x + ballWidth < cegly[i][0] + Math.Abs(deltaX) And y <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][1] Then 
-      x = cegly[i][0] - ballWidth
+    ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
+      x = cegly[i][1] - ballWidth
       hasHitX = "true"
       score = score + 1
       Sound.PlayClick()
-      cegly[i][4] = "false"
+      cegly[i][0] = "false"
     'Prawa ściana
-    ElseIf x <= cegly[i][0] + cegly[i][2] And x > cegly[i][0] + cegly[i][2] - Math.Abs(deltaX)  And y <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][1] then
-      x = cegly[i][0] + cegly[i][2]
+    ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
+      x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
       score = score + 1
       Sound.PlayClick()
-      cegly[i][4] = "false"
+      cegly[i][0] = "false"
       endIf
     EndIf
-    If cegly[i][4] <> "true" then
+    If cegly[i][0] <> "true" then
     Shapes.Remove(graficzneCegly[i])
     endIf
   EndFor
