@@ -10,7 +10,7 @@ paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 60
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
 gamePlays = "true"
-levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp.txt"
+levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp2.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 'x, y - pozycja początkowa kulki
@@ -29,22 +29,41 @@ kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
 kreskagora = Shapes.AddLine(0,0,800,0)
 kreskadol = Shapes.AddLine(0,0,800,0)
 
+'Tabela z kolorkami
+kolorki[0]="black"
+kolorki[1]="blue"
+kolorki[2]="cyan"
+kolorki[3]="gray"
+kolorki[4]="green"
+kolorki[5]="magneta"
+kolorki[6]="red"
+kolorki[7]="yellow"
+kolorki[8]="crimson"
+kolorki[9]="lightgreen"
+kolorki[10]="slateblue"
+kolorki[11]="skyblue"
+kolorki[12]="lightseagreen"
+kolorki[13]="forestgreen"
+
 'Pierwsza cegiełka yayyyy!
 For i = 2 to File.ReadLine(levelFilePath, 1) + 1
   linijka = File.ReadLine(levelFilePath, i)
   cegly[i-2][0] = "true"
-  For u = 1 to 3
+  For u = 1 to 4
     cegly[i-2][u] = Text.GetSubText(linijka, 1, Text.GetIndexOf(linijka, ",")-1)
     linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
   endFor
-  cegly[i-2][4] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+  cegly[i-2][5] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
 endFor 
 
 
 For i = 0 to Array.GetItemCount(cegly) - 1
+    GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
     graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
     Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
 endFor 
+
+GraphicsWindow.BrushColor = kolorki[1]
 
 Timer.Interval = 5
 Timer.Tick = OnTick 
