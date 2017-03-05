@@ -1,0 +1,161 @@
+
+
+'Wstępny skrypt
+GraphicsWindow.CanResize = "FALSE"
+GraphicsWindow.Width = 800
+GraphicsWindow.Height = 600
+GraphicsWindow.BrushColor = "cyan"
+paddleWidth = 120
+paddle = Shapes.AddRectangle(paddleWidth, 12)
+ballWidth = 60
+ball = Shapes.AddEllipse(ballWidth, ballWidth)
+gamePlays = "true"
+levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp.txt"
+GraphicsWindow.MouseMove = OnMouseMove
+score = 0
+'x, y - pozycja początkowa kulki
+x = 635
+y = 430
+Shapes.Move(ball, x, y)
+
+'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
+deltaX = -6
+deltaY = -6
+GraphicsWindow.PenWidth = 1
+
+'Kreski pomocnicze
+kreska = Shapes.AddLine(0, 0, 0, 800)
+kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
+kreskagora = Shapes.AddLine(0,0,800,0)
+kreskadol = Shapes.AddLine(0,0,800,0)
+
+'Pierwsza cegiełka yayyyy!
+For i = 2 to File.ReadLine(levelFilePath, 1) + 1
+  linijka = File.ReadLine(levelFilePath, i)
+  cegly[i-2][0] = "true"
+  For u = 1 to 3
+    cegly[i-2][u] = Text.GetSubText(linijka, 1, Text.GetIndexOf(linijka, ",")-1)
+    linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
+  endFor
+  cegly[i-2][4] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+endFor 
+
+
+For i = 0 to Array.GetItemCount(cegly) - 1
+    graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
+    Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
+endFor 
+
+Timer.Interval = 5
+Timer.Tick = OnTick 
+'Pętla główna programu
+
+    
+
+Sub OnMouseMove
+  paddleX = GraphicsWindow.MouseX
+  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
+EndSub
+
+Sub OnTick
+  If gamePlays Then
+  gw = GraphicsWindow.Width
+  gh = GraphicsWindow.Height
+
+  'Pomocnicze zmienne przeciw konfliktom
+  hasHitX = "false"
+  hasHitY = "false"
+  
+  'Blok kodu determinujący odbicie od ściany
+  If (x >= gw - (ballWidth) Or x <= 0) Then
+    deltaX = -deltaX
+  EndIf
+  If (y <= 0) Then
+    deltaY = -deltaY
+  EndIf
+  
+  'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
+  padX = Shapes.GetLeft(paddle)
+  If (y >= gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
+    y = gh - (ballWidth + 12)
+    deltaY = -deltaY
+    If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
+      If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
+        deltaX = deltaX - 0.3
+      ElseIf (x+(ballWidth/2)) > padX + (paddleWidth*3/5) + 2 Then
+        deltaX = deltaX + 0.3
+      EndIf
+    ElseIf (x+(ballWidth/2)) <= padX + (paddleWidth/5) Then
+      deltaX = deltaX - 0.5
+    ElseIf (x+(ballWidth/2)) >= padX + (paddleWidth*4/5) Then
+      deltaX = deltaX + 0.5  
+    EndIf
+  EndIf
+  
+  For i = 0 to Array.GetItemCount(cegly) - 1
+    'Odbicie od cegiełki
+    'Dolna ściana
+    If cegly[i][0] Then
+    If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
+      y = cegly[i][2] + cegly[i][4]
+      hasHitY = "true"
+      score = score + 1
+      Sound.PlayClick()
+      cegly[i][0] = "false"
+    'Górna ściana
+    ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
+      y = cegly[i][2] - ballWidth
+      hasHitY = "true"
+      score = score + 1
+      Sound.PlayClick()
+      cegly[i][0] = "false"
+    'Lewa ściana
+    ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
+      x = cegly[i][1] - ballWidth
+      hasHitX = "true"
+      score = score + 1
+      Sound.PlayClick()
+      cegly[i][0] = "false"
+    'Prawa ściana
+    ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
+      x = cegly[i][1] + cegly[i][3]
+      hasHitX = "true"
+      score = score + 1
+      Sound.PlayClick()
+      cegly[i][0] = "false"
+      endIf
+    EndIf
+    If cegly[i][0] <> "true" then
+    Shapes.Remove(graficzneCegly[i])
+    endIf
+  EndFor
+
+  'Ostateczne przesunięcie kulki
+  If (hasHitY) then
+  deltaY = -deltaY
+  endIf 
+  If (hasHitX) then
+  deltaX = -deltaX
+  endif
+
+  x = x + deltaX
+  y = y + deltaY
+  Shapes.Move(ball, x, y)
+  Shapes.Move(kreska, x, 0)
+  Shapes.Move(kreskaprawa, x + ballWidth, 0)
+  Shapes.Move(kreskagora,0, y)
+  Shapes.Move(kreskadol, 0, y + ballWidth)
+  
+  
+  If (y >= gh) Then
+    gamePlays = "false"
+    Sound.PlayBellRing()
+  EndIf
+  If score = 32 Then
+    gamePlays = "false"
+    Sound.PlayChime()
+  EndIf
+  
+EndIf
+EndSub
+
