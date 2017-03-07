@@ -1,5 +1,3 @@
-
-
 'Wstępny skrypt
 GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
@@ -7,20 +5,27 @@ GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
 paddleWidth = 120
 paddle = Shapes.AddRectangle(paddleWidth, 12)
-ballWidth = 60
+ballWidth = 30
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
-gamePlays = "true"
-levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp2.txt"
+Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
+gamePlays = "false"
+gamePaused = "false"
+levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
+
+'liczbaIteracji - od 0 do końca poziomu
+liczbaIteracji = 0
 'x, y - pozycja początkowa kulki
-x = 635
+x = 600
 y = 430
 Shapes.Move(ball, x, y)
 
+'przyspieszenie-zmienna z witaminki przyspieszenia
+przyspieszeniePilki = 1
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = -6
-deltaY = -6
+deltaX = -6*przyspieszeniePilki
+deltaY = -6*przyspieszeniePilki
 GraphicsWindow.PenWidth = 1
 
 'Kreski pomocnicze
@@ -35,7 +40,7 @@ kolorki[1]="blue"
 kolorki[2]="cyan"
 kolorki[3]="gray"
 kolorki[4]="green"
-kolorki[5]="magneta"
+kolorki[5]="magenta"
 kolorki[6]="red"
 kolorki[7]="yellow"
 kolorki[8]="crimson"
@@ -45,17 +50,22 @@ kolorki[11]="skyblue"
 kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
+'Tabela z efektami
+wskaznikEfektu = 1
+efektDoDodania = 0
+efekty[0] = 0
+'0-brak efektu, 1-przyspieszenie
+
 'Pierwsza cegiełka yayyyy!
 For i = 2 to File.ReadLine(levelFilePath, 1) + 1
   linijka = File.ReadLine(levelFilePath, i)
   cegly[i-2][0] = "true"
-  For u = 1 to 4
+  For u = 1 to 5
     cegly[i-2][u] = Text.GetSubText(linijka, 1, Text.GetIndexOf(linijka, ",")-1)
     linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
   endFor
-  cegly[i-2][5] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+  cegly[i-2][6] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
 endFor 
-
 
 For i = 0 to Array.GetItemCount(cegly) - 1
     GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
@@ -64,20 +74,20 @@ For i = 0 to Array.GetItemCount(cegly) - 1
 endFor 
 
 GraphicsWindow.BrushColor = kolorki[1]
+GraphicsWindow.FontSize = 22
+GraphicsWindow.FontBold = "FALSE"
+GraphicsWindow.FontName = "Book Antiqua"
+tekstPauzy = Shapes.AddText("PAUZA. Wciśnij SPACE aby kontynuować")
+Shapes.Move(tekstPauzy, GraphicsWindow.Width/2 - 418/2, GraphicsWindow.Height/2 - 11)
+Shapes.HideShape(tekstPauzy)
+GraphicsWindow.KeyDown = OnKeyDown
+scoreString = Shapes.AddText("Wynik: " + score)
+Program.Delay(1500)
+gamePlays = "true"
 
-Timer.Interval = 5
-Timer.Tick = OnTick 
+start:
 'Pętla główna programu
-
-    
-
-Sub OnMouseMove
-  paddleX = GraphicsWindow.MouseX
-  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
-EndSub
-
-Sub OnTick
-  If gamePlays Then
+If gamePlays And gamePaused = "false"Then
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
 
@@ -118,28 +128,40 @@ Sub OnTick
     If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
+      efektDoDodania = cegly[i][6]
+      DodajEfekt()
       score = score + 1
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
     'Górna ściana
     ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
+      efektDoDodania = cegly[i][6]
+      DodajEfekt()
       score = score + 1
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
     'Lewa ściana
     ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
       x = cegly[i][1] - ballWidth
       hasHitX = "true"
+      efektDoDodania = cegly[i][6]
+      DodajEfekt()
       score = score + 1
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
     'Prawa ściana
     ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
       x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
+      efektDoDodania = cegly[i][6]
+      DodajEfekt()
       score = score + 1
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
       endIf
@@ -164,17 +186,48 @@ Sub OnTick
   Shapes.Move(kreskaprawa, x + ballWidth, 0)
   Shapes.Move(kreskagora,0, y)
   Shapes.Move(kreskadol, 0, y + ballWidth)
-  
-  
-  If (y >= gh) Then
-    gamePlays = "false"
-    Sound.PlayBellRing()
-  EndIf
-  If score = 32 Then
+ 
+EndIf
+If score = File.ReadLine(levelFilePath, 1) Then
     gamePlays = "false"
     Sound.PlayChime()
   EndIf
-  
-EndIf
+  If (y >= gh) Then
+    gamePlays = "false"
+    Sound.PlayBellRing()
+  Else
+    Program.Delay(5)
+    liczbaIteracji = liczbaIteracji + 1
+    Goto start
+  EndIf      
+      
+Sub OnMouseMove
+  If gamePlays And gamePaused = "false" Then
+  paddleX = GraphicsWindow.MouseX
+  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
+  EndIf
 EndSub
 
+Sub OnKeyDown
+  If GraphicsWindow.LastKey = "Space" And gamePlays Then
+    If gamePaused = "false" Then
+      gamePaused = "true"
+      Shapes.ShowShape(tekstPauzy)
+    Else
+      gamePaused = "false"
+      Shapes.HideShape(tekstPauzy)
+      Program.Delay(5)
+      Goto start
+    EndIf
+  EndIf
+EndSub
+
+Sub DodajEfekt
+  efekty[Array.GetItemCount(efekty)][0] = efektDoDodania
+  '1000 - 5 s
+  efekty[Array.GetItemCount(efekty)][1] = liczbaIteracji + 1000
+  If efekty[Array.GetItemCount(efekty)-1][0] = 1 Then
+    przyspieszeniePilki = przyspieszeniePilki + 0.5
+  EndIf
+EndSub
+  
