@@ -1,5 +1,5 @@
 [GOTOWE] Cegiełki
-Punkty za cegiełki
+[GOTOWE] Punkty za cegiełki
 Poziomy
 Cegiełki z bonusami/cegiełki specjalne
 	Piłka lata szybciej
