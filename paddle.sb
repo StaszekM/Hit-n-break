@@ -10,7 +10,7 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
+levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-dla-mai\temp2.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 
@@ -21,11 +21,9 @@ x = 600
 y = 430
 Shapes.Move(ball, x, y)
 
-'przyspieszenie-zmienna z witaminki przyspieszenia
-przyspieszeniePilki = 1
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = -6*przyspieszeniePilki
-deltaY = -6*przyspieszeniePilki
+deltaX = -2
+deltaY = -2
 GraphicsWindow.PenWidth = 1
 
 'Kreski pomocnicze
@@ -50,11 +48,14 @@ kolorki[11]="skyblue"
 kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
+'wartosc przyspieszenia
+przyspieszenie = 1.17
 'Tabela z efektami
 wskaznikEfektu = 1
 efektDoDodania = 0
 efekty[0] = 0
 '0-brak efektu, 1-przyspieszenie
+
 
 'Pierwsza cegiełka yayyyy!
 For i = 2 to File.ReadLine(levelFilePath, 1) + 1
@@ -71,7 +72,7 @@ For i = 0 to Array.GetItemCount(cegly) - 1
     GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
     graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
     Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
-endFor 
+  endFor 
 
 GraphicsWindow.BrushColor = kolorki[1]
 GraphicsWindow.FontSize = 22
@@ -90,7 +91,24 @@ start:
 If gamePlays And gamePaused = "false"Then
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
-
+  
+  
+  'Sprawdzanie czy efekty przestają działać
+  If wskaznikEfektu < Array.GetItemCount(efekty) Then
+    If efekty[wskaznikEfektu][1] = liczbaIteracji Then
+      usun:
+      If efekty[wskaznikEfektu][0] = 1 Then
+        deltaX = deltaX/przyspieszenie
+        deltaY = deltaY/przyspieszenie
+      EndIf
+      wskaznikEfektu = wskaznikEfektu + 1
+      If wskaznikEfektu < Array.GetItemCount(efekty) And efekty[wskaznikEfektu][1] = liczbaIteracji Then
+        Goto usun
+      Endif
+     EndIf
+   Endif
+      
+  
   'Pomocnicze zmienne przeciw konfliktom
   hasHitX = "false"
   hasHitY = "false"
@@ -129,7 +147,9 @@ If gamePlays And gamePaused = "false"Then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
       efektDoDodania = cegly[i][6]
-      DodajEfekt()
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
       score = score + 1
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
@@ -139,7 +159,9 @@ If gamePlays And gamePaused = "false"Then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
       efektDoDodania = cegly[i][6]
-      DodajEfekt()
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
       score = score + 1
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
@@ -149,7 +171,9 @@ If gamePlays And gamePaused = "false"Then
       x = cegly[i][1] - ballWidth
       hasHitX = "true"
       efektDoDodania = cegly[i][6]
-      DodajEfekt()
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
       score = score + 1
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
@@ -159,7 +183,9 @@ If gamePlays And gamePaused = "false"Then
       x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
       efektDoDodania = cegly[i][6]
-      DodajEfekt()
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
       score = score + 1
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
@@ -223,11 +249,13 @@ Sub OnKeyDown
 EndSub
 
 Sub DodajEfekt
-  efekty[Array.GetItemCount(efekty)][0] = efektDoDodania
-  '1000 - 5 s
-  efekty[Array.GetItemCount(efekty)][1] = liczbaIteracji + 1000
-  If efekty[Array.GetItemCount(efekty)-1][0] = 1 Then
-    przyspieszeniePilki = przyspieszeniePilki + 0.5
+  dlugoscTablicy = Array.GetItemCount(efekty)
+  efekty[dlugoscTablicy][0] = efektDoDodania
+  '5000 - 5 s
+  efekty[dlugoscTablicy][1] = liczbaIteracji + 3000
+  If efekty[dlugoscTablicy][0] = 1 Then
+    deltaX = deltaX*przyspieszenie
+    deltaY = deltaY*przyspieszenie
   EndIf
 EndSub
   
