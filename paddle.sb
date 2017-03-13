@@ -3,14 +3,14 @@ GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
-paddleWidth = 120
+paddleWidth = 240
 paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 30
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-dla-mai\temp2.txt"
+levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 
@@ -49,7 +49,7 @@ kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
 'wartosc przyspieszenia
-przyspieszenie = 1.17
+przyspieszenie = 1.3
 'Tabela z efektami
 wskaznikEfektu = 1
 efektDoDodania = 0
@@ -115,9 +115,15 @@ If gamePlays And gamePaused = "false"Then
   
   'Blok kodu determinujący odbicie od ściany
   If (x >= gw - (ballWidth) Or x <= 0) Then
+    If x >= gw - (ballWidth) Then
+      x = gw - ballWidth
+    Else
+      x = 0  
+    endIf
     deltaX = -deltaX
   EndIf
   If (y <= 0) Then
+    y = 0
     deltaY = -deltaY
   EndIf
   
@@ -207,6 +213,10 @@ If gamePlays And gamePaused = "false"Then
 
   x = x + deltaX
   y = y + deltaY
+  
+  paddleX = GraphicsWindow.MouseX
+  Shapes.Move(paddle, paddleX - paddleWidth/2, GraphicsWindow.Height - 12)
+  
   Shapes.Move(ball, x, y)
   Shapes.Move(kreska, x, 0)
   Shapes.Move(kreskaprawa, x + ballWidth, 0)
@@ -222,16 +232,16 @@ If score = File.ReadLine(levelFilePath, 1) Then
     gamePlays = "false"
     Sound.PlayBellRing()
   Else
-    Program.Delay(5)
-    liczbaIteracji = liczbaIteracji + 1
+    Program.Delay(10)
+    liczbaIteracji = liczbaIteracji + 10
     Goto start
   EndIf      
       
 Sub OnMouseMove
-  If gamePlays And gamePaused = "false" Then
-  paddleX = GraphicsWindow.MouseX
-  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
-  EndIf
+  'If gamePlays And gamePaused = "false" Then
+  'paddleX = GraphicsWindow.MouseX
+  'Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
+  'EndIf
 EndSub
 
 Sub OnKeyDown
@@ -252,7 +262,7 @@ Sub DodajEfekt
   dlugoscTablicy = Array.GetItemCount(efekty)
   efekty[dlugoscTablicy][0] = efektDoDodania
   '5000 - 5 s
-  efekty[dlugoscTablicy][1] = liczbaIteracji + 3000
+  efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
   If efekty[dlugoscTablicy][0] = 1 Then
     deltaX = deltaX*przyspieszenie
     deltaY = deltaY*przyspieszenie
