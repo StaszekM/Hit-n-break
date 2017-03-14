@@ -10,7 +10,7 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\uczen\Desktop\Hit-n-break-dla-mai\temp2.txt"
+levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 
