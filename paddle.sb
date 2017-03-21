@@ -3,6 +3,7 @@ GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
+textwindow.Show()
 paddleWidth = 240
 paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 30
@@ -17,12 +18,12 @@ score = 0
 'liczbaIteracji - od 0 do końca poziomu
 liczbaIteracji = 0
 'x, y - pozycja początkowa kulki
-x = 600
+x = 610
 y = 430
 Shapes.Move(ball, x, y)
 
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = -2
+deltaX = -2.5
 deltaY = -2
 GraphicsWindow.PenWidth = 1
 
@@ -49,7 +50,7 @@ kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
 'wartosc przyspieszenia
-przyspieszenie = 1
+przyspieszenie = 1.3
 'Tabela z efektami
 wskaznikEfektu = 1
 efektDoDodania = 0
@@ -98,8 +99,8 @@ If gamePlays And gamePaused = "false"Then
     If efekty[wskaznikEfektu][1] = liczbaIteracji Then
       usun:
       If efekty[wskaznikEfektu][0] = 1 Then
-        deltaX = deltaX-przyspieszenie
-        deltaY = deltaY-przyspieszenie
+        deltaX = deltaX/przyspieszenie
+        deltaY = deltaY/przyspieszenie
       EndIf
       wskaznikEfektu = wskaznikEfektu + 1
       If wskaznikEfektu < Array.GetItemCount(efekty) And efekty[wskaznikEfektu][1] = liczbaIteracji Then
@@ -112,7 +113,6 @@ If gamePlays And gamePaused = "false"Then
   'Pomocnicze zmienne przeciw konfliktom
   hasHitX = "false"
   hasHitY = "false"
-  
   'Blok kodu determinujący odbicie od ściany
   If (x >= gw - (ballWidth) Or x <= 0) Then
     If x >= gw - (ballWidth) Then
@@ -129,19 +129,41 @@ If gamePlays And gamePaused = "false"Then
   
   'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
-  If (y >= gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
-    y = gh - (ballWidth + 12)
-    deltaY = -deltaY
+  If (y > gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
+    TextWindow.WriteLine("Dotknięcie platformy")
+    y = gh - (ballWidth + 12) - 1
     If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
       If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
-        deltaX = deltaX - 0.3*Math.Abs(deltaX)
+        If deltaX <> 0 Then
+          alpha = 60 - Math.GetDegrees(Math.ArcTan(-deltaY/deltaX))
+        else
+          alpha = -30  
+        endIf 
+          v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
+          deltaX = v * Math.Cos(Math.GetRadians(60 + alpha))
+          deltaY = v * Math.Sin(Math.GetRadians(60 + alpha))
       ElseIf (x+(ballWidth/2)) > padX + (paddleWidth*3/5) + 2 Then
-        deltaX = deltaX + 0.3*Math.Abs(deltaX)
-      EndIf
+        If deltaX <> 0 Then
+          alpha = 120 - Math.GetDegrees(Math.ArcTan(-deltaY/deltaX))
+        else
+          alpha = 30  
+        endIf 
+          v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
+          deltaX = v * Math.Cos(Math.GetRadians(120 + alpha))
+          deltaY = v * Math.Sin(Math.GetRadians(120 + alpha))
+      Else
+          deltaY = -deltaY
+      EndIf 
     ElseIf (x+(ballWidth/2)) <= padX + (paddleWidth/5) Then
-      deltaX = deltaX - 0.5*Math.Abs(deltaX)
+      TextWindow.WriteLine("Lewa krawędź")
+      bubble = deltaX
+      deltaX = -deltaY
+      deltaY = -1 * Math.Abs(bubble)
     ElseIf (x+(ballWidth/2)) >= padX + (paddleWidth*4/5) Then
-      deltaX = deltaX + 0.5*Math.Abs(deltaX) 
+      TextWindow.WriteLine("Prawa krawędź")
+      bubble = deltaX
+      deltaX = deltaY
+      deltaY = -1 * Math.Abs(bubble)
     EndIf
   EndIf
   
@@ -210,7 +232,9 @@ If gamePlays And gamePaused = "false"Then
   If (hasHitX) then
   deltaX = -deltaX
   endif
-
+  If deltaY = 0 Then
+    deltaY =  -0.01
+  EndIf
   x = x + deltaX
   y = y + deltaY
   
@@ -264,16 +288,8 @@ Sub DodajEfekt
   '5000 - 5 s
   efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
   If efekty[dlugoscTablicy][0] = 1 Then
-    If deltaX < 0 Then
-      deltaX = deltaX-przyspieszenie
-    Else
-      deltaX = deltaX+przyspieszenie
-    EndIf
-    If deltaY < 0 Then
-      deltaY = deltaY-przyspieszenie
-    Else
-      deltaY = deltaY+przyspieszenie
-     EndIf
+      deltaX = deltaX*przyspieszenie
+      deltaY = deltaY*przyspieszenie
   EndIf
 EndSub
   
