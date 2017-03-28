@@ -4,14 +4,15 @@ Poziomy
 Cegiełki z bonusami/cegiełki specjalne
 	[GOTOWE] Piłka lata szybciej
 	[GOTOWE] Piłka lata wolniej
-	Szersza/węższa platforma
+	[GOTOWE] Szersza/węższa platforma
 	Więcej piłek
-	2x punkty
+	[GOTOWE] 2x punkty
 	Lasery
 	Piłka większa/mniejsza
 	Niezniszczalne cegiełki
 	Celownik
 Animacje
+Ikonki witaminek
 Kolorowe plamki przypominające piłkę
 Grafika
 Dźwięki/muzyka
