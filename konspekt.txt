@@ -2,7 +2,7 @@
 [GOTOWE] Punkty za cegiełki
 Poziomy
 Cegiełki z bonusami/cegiełki specjalne
-	Piłka lata szybciej
+	[GOTOWE] Piłka lata szybciej
 	Piłka lata wolniej
 	Szersza/węższa platforma
 	Więcej piłek
