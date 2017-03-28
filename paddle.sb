@@ -3,7 +3,7 @@ GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
-textwindow.Show()
+TextWindow.Show()
 paddleWidth = 240
 paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 30
@@ -23,8 +23,8 @@ y = 430
 Shapes.Move(ball, x, y)
 
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = -2.5
-deltaY = -2
+deltaX = -3
+deltaY = -Math.SquareRoot(3)
 GraphicsWindow.PenWidth = 1
 
 'Kreski pomocnicze
@@ -130,42 +130,29 @@ If gamePlays And gamePaused = "false"Then
   'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
   If (y > gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
-    TextWindow.WriteLine("Dotknięcie platformy")
-    y = gh - (ballWidth + 12) - 1
-    If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
-      If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
-        If deltaX <> 0 Then
-          alpha = 60 - Math.GetDegrees(Math.ArcTan(-deltaY/deltaX))
-        else
-          alpha = -30  
-        endIf 
-          v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
-          deltaX = v * Math.Cos(Math.GetRadians(60 + alpha))
-          deltaY = v * Math.Sin(Math.GetRadians(60 + alpha))
-      ElseIf (x+(ballWidth/2)) > padX + (paddleWidth*3/5) + 2 Then
-        If deltaX <> 0 Then
-          alpha = 120 - Math.GetDegrees(Math.ArcTan(-deltaY/deltaX))
-        else
-          alpha = 30  
-        endIf 
-          v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
-          deltaX = v * Math.Cos(Math.GetRadians(120 + alpha))
-          deltaY = v * Math.Sin(Math.GetRadians(120 + alpha))
-      Else
-          deltaY = -deltaY
-      EndIf 
-    ElseIf (x+(ballWidth/2)) <= padX + (paddleWidth/5) Then
-      TextWindow.WriteLine("Lewa krawędź")
-      bubble = deltaX
-      deltaX = -deltaY
-      deltaY = -1 * Math.Abs(bubble)
-    ElseIf (x+(ballWidth/2)) >= padX + (paddleWidth*4/5) Then
-      TextWindow.WriteLine("Prawa krawędź")
-      bubble = deltaX
-      deltaX = deltaY
-      deltaY = -1 * Math.Abs(bubble)
+    If uruchomionaPaletka = "TRUE" Then
+    uruchomionaPaletka = "FALSE"
+    roznica = (x + (ballWidth/2)) - (padX + (paddleWidth/2))
+    v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
+    If roznica > 0 Then
+      TextWindow.WriteLine("prawa krawedz")
+      kat = roznica/(paddleWidth/2)*60
+      deltaX = v * Math.Sin(Math.GetRadians(kat))*roznica/Math.Abs(roznica)
+      deltaY = -Math.Abs(v * Math.Cos(Math.GetRadians(kat)))
+    ElseIf roznica < 0 Then
+      TextWindow.WriteLine("lewa krawedz")
+      kat = roznica/(paddleWidth/2)*60
+      deltaX = -v * Math.Sin(Math.GetRadians(kat))*roznica/Math.Abs(roznica)
+      deltaY = -Math.Abs(v * Math.Cos(Math.GetRadians(kat)))
+    Else
+      deltaY = -deltaY
     EndIf
-  EndIf
+    EndIf 
+  Else
+    uruchomionaPaletka = "TRUE"
+  EndIf 
+  
+  
   
   For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
