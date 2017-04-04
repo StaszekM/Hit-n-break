@@ -1,26 +1,31 @@
-
-
 'Wstępny skrypt
 GraphicsWindow.CanResize = "FALSE"
 GraphicsWindow.Width = 800
 GraphicsWindow.Height = 600
 GraphicsWindow.BrushColor = "cyan"
-paddleWidth = 120
+paddleWidth = 150
+GraphicsWindow.PenWidth = 1.5
 paddle = Shapes.AddRectangle(paddleWidth, 12)
-ballWidth = 60
+ballWidth = 22
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
-gamePlays = "true"
-levelFilePath = "C:\Users\Iwo\Desktop\Hit-n-break-master\temp2.txt"
+Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
+gamePlays = "false"
+gamePaused = "false"
+levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
+pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
+licznikZbitychCegielek = 0
+'liczbaIteracji - od 0 do końca poziomu
+liczbaIteracji = 0
 'x, y - pozycja początkowa kulki
-x = 635
+x = 610
 y = 430
 Shapes.Move(ball, x, y)
 
 'deltaX, deltaY - liczby oznaczające przesunięcie w pikselach na jednostkę czasu
-deltaX = -6
-deltaY = -6
+deltaX = -3
+deltaY = -Math.SquareRoot(3)
 GraphicsWindow.PenWidth = 1
 
 'Kreski pomocnicze
@@ -35,7 +40,7 @@ kolorki[1]="blue"
 kolorki[2]="cyan"
 kolorki[3]="gray"
 kolorki[4]="green"
-kolorki[5]="magneta"
+kolorki[5]="magenta"
 kolorki[6]="red"
 kolorki[7]="yellow"
 kolorki[8]="crimson"
@@ -45,71 +50,154 @@ kolorki[11]="skyblue"
 kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
+'wartosc przyspieszenia
+przyspieszenie = 1.3
+'Tabela z efektami
+wskaznikEfektu = 1
+efektDoDodania = 0
+efekty[0] = 0
+'0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka
+mnoznikPunktow = 1
+liczbaCegielekWOgole = File.ReadLine(levelFilePath, 1)
+
 'Pierwsza cegiełka yayyyy!
-For i = 2 to File.ReadLine(levelFilePath, 1) + 1
+liczbaSzarych = 0
+For i = 2 to liczbaCegielekWOgole + 1
   linijka = File.ReadLine(levelFilePath, i)
   cegly[i-2][0] = "true"
-  For u = 1 to 4
+  For u = 1 to 5
     cegly[i-2][u] = Text.GetSubText(linijka, 1, Text.GetIndexOf(linijka, ",")-1)
     linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
   endFor
-  cegly[i-2][5] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+  cegly[i-2][6] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+  If cegly[i-2][6] = 6 Then
+    liczbaSzarych = liczbaSzarych + 1
+  EndIf
 endFor 
-
-
 For i = 0 to Array.GetItemCount(cegly) - 1
     GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
     graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
     Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
-endFor 
+  endFor 
 
 GraphicsWindow.BrushColor = kolorki[1]
+GraphicsWindow.FontSize = 22
+GraphicsWindow.FontBold = "FALSE"
+GraphicsWindow.FontName = "Book Antiqua"
+tekstPauzy = Shapes.AddText("PAUZA. Wciśnij SPACE aby kontynuować")
+Shapes.Move(tekstPauzy, GraphicsWindow.Width/2 - 418/2, GraphicsWindow.Height/2 - 11)
+Shapes.HideShape(tekstPauzy)
+GraphicsWindow.KeyDown = OnKeyDown
+scoreString = Shapes.AddText("Wynik: " + score)
+Program.Delay(1500)
+gamePlays = "true"
 
-Timer.Interval = 5
-Timer.Tick = OnTick 
+start:
 'Pętla główna programu
-
-    
-
-Sub OnMouseMove
-  paddleX = GraphicsWindow.MouseX
-  Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
-EndSub
-
-Sub OnTick
-  If gamePlays Then
+If gamePlays And gamePaused = "false"Then
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
-
+  
+  
+  'Sprawdzanie czy efekty przestają działać
+  For i = 0 To Array.GetItemCount(efekty)-1
+    If efekty[i][1] = liczbaIteracji Then
+      If efekty[i][0] = 1 Then
+        deltaX = deltaX/przyspieszenie
+        deltaY = deltaY/przyspieszenie
+      ElseIf efekty[i][0] = 2 Then
+        deltaX = deltaX*przyspieszenie
+        deltaY = deltaY*przyspieszenie
+      ElseIf efekty[i][0] = 3 Then
+        paddleWidth = paddleWidth * 4/5
+        Shapes.Remove(paddle)
+        GraphicsWindow.BrushColor = "CYAN"
+        GraphicsWindow.PenWidth = 1.5
+        paddle = Shapes.AddRectangle(paddleWidth, 12)  
+      ElseIf efekty[i][0] = 4 Then
+        paddleWidth = paddleWidth * 5/3.5
+        Shapes.Remove(paddle)
+        GraphicsWindow.BrushColor = "CYAN"
+        GraphicsWindow.PenWidth = 1.5
+        paddle = Shapes.AddRectangle(paddleWidth, 12)  
+      ElseIf efekty[i][0] = 5 Then
+        mnoznikPunktow = mnoznikPunktow - 1
+        EndIf
+     EndIf
+  EndFor
+  'If wskaznikEfektu < Array.GetItemCount(efekty) Then
+    'If efekty[wskaznikEfektu][1] = liczbaIteracji Then
+      'usun:
+      'If efekty[wskaznikEfektu][0] = 1 Then
+        'deltaX = deltaX/przyspieszenie
+        'deltaY = deltaY/przyspieszenie
+      'ElseIf efekty[wskaznikEfektu][0] = 2 Then
+        'deltaX = deltaX*przyspieszenie
+        'deltaY = deltaY*przyspieszenie
+      'ElseIf efekty[wskaznikEfektu][0] = 3 Then
+        'paddleWidth = paddleWidth * 4/5
+        'Shapes.Remove(paddle)
+        'GraphicsWindow.BrushColor = "CYAN"
+        'GraphicsWindow.PenWidth = 1.5
+        'paddle = Shapes.AddRectangle(paddleWidth, 12)  
+      'ElseIf efekty[wskaznikEfektu][0] = 4 Then
+        'paddleWidth = paddleWidth * 5/3.5
+        'Shapes.Remove(paddle)
+        'GraphicsWindow.BrushColor = "CYAN"
+        'GraphicsWindow.PenWidth = 1.5
+        'paddle = Shapes.AddRectangle(paddleWidth, 12)  
+      'ElseIf efekty[wskaznikEfektu][0] = 5 Then
+        'mnoznikPunktow = mnoznikPunktow - 1
+    'EndIf
+      'wskaznikEfektu = wskaznikEfektu + 1
+      'If wskaznikEfektu < Array.GetItemCount(efekty) And efekty[wskaznikEfektu][1] = liczbaIteracji Then
+        'Goto usun
+      'Endif
+     'EndIf
+   'Endif
+      
+  
   'Pomocnicze zmienne przeciw konfliktom
   hasHitX = "false"
   hasHitY = "false"
-  
   'Blok kodu determinujący odbicie od ściany
   If (x >= gw - (ballWidth) Or x <= 0) Then
+    If x >= gw - (ballWidth) Then
+      x = gw - ballWidth
+    Else
+      x = 0  
+    endIf
     deltaX = -deltaX
   EndIf
   If (y <= 0) Then
+    y = 0
     deltaY = -deltaY
   EndIf
   
   'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
-  If (y >= gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
-    y = gh - (ballWidth + 12)
-    deltaY = -deltaY
-    If (x+(ballWidth/2)) > padX + (paddleWidth/5) And (x+(ballWidth/2)) < padX + (paddleWidth*4/5) Then
-      If (x+(ballWidth/2)) < padX + (paddleWidth*2/5) - 2 Then
-        deltaX = deltaX - 0.3
-      ElseIf (x+(ballWidth/2)) > padX + (paddleWidth*3/5) + 2 Then
-        deltaX = deltaX + 0.3
-      EndIf
-    ElseIf (x+(ballWidth/2)) <= padX + (paddleWidth/5) Then
-      deltaX = deltaX - 0.5
-    ElseIf (x+(ballWidth/2)) >= padX + (paddleWidth*4/5) Then
-      deltaX = deltaX + 0.5  
+  If (y > gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
+    If uruchomionaPaletka = "TRUE" Then
+    uruchomionaPaletka = "FALSE"
+    roznica = (x + (ballWidth/2)) - (padX + (paddleWidth/2))
+    v = Math.SquareRoot(Math.Power(deltaX, 2) + Math.Power(deltaY, 2))
+    If roznica > 0 Then
+      kat = roznica/(paddleWidth/2)*60
+      deltaX = v * Math.Sin(Math.GetRadians(kat))*roznica/Math.Abs(roznica)
+      deltaY = -Math.Abs(v * Math.Cos(Math.GetRadians(kat)))
+    ElseIf roznica < 0 Then
+      kat = roznica/(paddleWidth/2)*60
+      deltaX = -v * Math.Sin(Math.GetRadians(kat))*roznica/Math.Abs(roznica)
+      deltaY = -Math.Abs(v * Math.Cos(Math.GetRadians(kat)))
+    Else
+      deltaY = -deltaY
     EndIf
-  EndIf
+    EndIf 
+  Else
+    uruchomionaPaletka = "TRUE"
+  EndIf 
+  
+  
   
   For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
@@ -118,31 +206,63 @@ Sub OnTick
     If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
-      score = score + 1
+      If cegly[i][6] <> 6 Then
+      efektDoDodania = cegly[i][6]
+      licznikZbitychCegielek = licznikZbitychCegielek + 1
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
+      score = score + 1*mnoznikPunktow
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Górna ściana
     ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
-      score = score + 1
+      efektDoDodania = cegly[i][6]
+      If cegly[i][6] <> 6 Then
+      licznikZbitychCegielek = licznikZbitychCegielek + 1
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
+      score = score + 1*mnoznikPunktow
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Lewa ściana
     ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
       x = cegly[i][1] - ballWidth
       hasHitX = "true"
-      score = score + 1
+      If cegly[i][6] <> 6 Then
+      efektDoDodania = cegly[i][6]
+      licznikZbitychCegielek = licznikZbitychCegielek + 1
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
+      score = score + 1*mnoznikPunktow
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Prawa ściana
     ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
       x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
-      score = score + 1
+      If cegly[i][6] <> 6 Then
+      efektDoDodania = cegly[i][6]
+      licznikZbitychCegielek = licznikZbitychCegielek + 1
+      If efektDoDodania > 0 Then
+        DodajEfekt()
+      EndIf
+      score = score + 1*mnoznikPunktow
+      Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
       endIf
+      EndIf
     EndIf
     If cegly[i][0] <> "true" then
     Shapes.Remove(graficzneCegly[i])
@@ -156,25 +276,86 @@ Sub OnTick
   If (hasHitX) then
   deltaX = -deltaX
   endif
-
+  If deltaY = 0 Then
+    deltaY =  -0.01
+  EndIf
   x = x + deltaX
   y = y + deltaY
+  
+  paddleX = GraphicsWindow.MouseX
+  Shapes.Move(paddle, paddleX - paddleWidth/2, GraphicsWindow.Height - 12)
+  
   Shapes.Move(ball, x, y)
   Shapes.Move(kreska, x, 0)
   Shapes.Move(kreskaprawa, x + ballWidth, 0)
   Shapes.Move(kreskagora,0, y)
   Shapes.Move(kreskadol, 0, y + ballWidth)
-  
-  
-  If (y >= gh) Then
-    gamePlays = "false"
-    Sound.PlayBellRing()
-  EndIf
-  If score = 32 Then
+ 
+EndIf
+If licznikZbitychCegielek = liczbaCegielekWOgole - liczbaSzarych then
     gamePlays = "false"
     Sound.PlayChime()
   EndIf
-  
-EndIf
+  If (y >= gh) Then
+    gamePlays = "false"
+    Sound.PlayBellRing()
+  Else
+    Program.Delay(5)
+    liczbaIteracji = liczbaIteracji + 5
+    Goto start
+  EndIf      
+      
+Sub OnMouseMove
+  'If gamePlays And gamePaused = "false" Then
+  'paddleX = GraphicsWindow.MouseX
+  'Shapes.Move(paddle, paddleX - 60, GraphicsWindow.Height - 12)
+  'EndIf
 EndSub
 
+Sub OnKeyDown
+  If GraphicsWindow.LastKey = "Space" And gamePlays Then
+    If gamePaused = "false" Then
+      gamePaused = "true"
+      Shapes.ShowShape(tekstPauzy)
+    Else
+      gamePaused = "false"
+      Shapes.HideShape(tekstPauzy)
+      Program.Delay(5)
+      Goto start
+    EndIf
+  EndIf
+EndSub
+
+Sub DodajEfekt
+  dlugoscTablicy = Array.GetItemCount(efekty)
+  efekty[dlugoscTablicy][0] = efektDoDodania
+  '5000 - 5 s
+  
+  If efekty[dlugoscTablicy][0] = 1 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
+      deltaX = deltaX*przyspieszenie
+      deltaY = deltaY*przyspieszenie
+    ElseIf efekty[dlugoscTablicy][0] = 2 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
+      deltaX = deltaX/przyspieszenie
+      deltaY = deltaY/przyspieszenie
+    ElseIf efekty[dlugoscTablicy][0] = 3 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 1000
+      paddleWidth = paddleWidth*5/4
+      Shapes.Remove(paddle)
+      GraphicsWindow.BrushColor = "CYAN"
+      GraphicsWindow.PenWidth = 1.5
+      paddle = Shapes.AddRectangle(paddleWidth, 12)
+    ElseIf efekty[dlugoscTablicy][0] = 4 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 1000
+      paddleWidth = paddleWidth*3.5/5
+      Shapes.Remove(paddle)
+      GraphicsWindow.BrushColor = "CYAN"
+      GraphicsWindow.PenWidth = 1.5
+      paddle = Shapes.AddRectangle(paddleWidth, 12)
+    ElseIf efekty[dlugoscTablicy][0] = 5 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 10000
+      mnoznikPunktow = mnoznikPunktow + 1
+    EndIf
+EndSub
+  
