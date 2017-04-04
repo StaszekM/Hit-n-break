@@ -12,6 +12,7 @@ Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Heigh
 gamePlays = "false"
 gamePaused = "false"
 levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
+pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
 licznikZbitychCegielek = 0
@@ -57,9 +58,11 @@ efektDoDodania = 0
 efekty[0] = 0
 '0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka
 mnoznikPunktow = 1
+liczbaCegielekWOgole = File.ReadLine(levelFilePath, 1)
 
 'Pierwsza cegiełka yayyyy!
-For i = 2 to File.ReadLine(levelFilePath, 1) + 1
+liczbaSzarych = 0
+For i = 2 to liczbaCegielekWOgole + 1
   linijka = File.ReadLine(levelFilePath, i)
   cegly[i-2][0] = "true"
   For u = 1 to 5
@@ -67,8 +70,10 @@ For i = 2 to File.ReadLine(levelFilePath, 1) + 1
     linijka = Text.GetSubText(linijka, Text.GetIndexOf(linijka,",")+1, Text.GetLength(linijka))
   endFor
   cegly[i-2][6] = Text.GetSubText(linijka, Text.GetIndexOf(linijka, ",")+1, Text.GetLength(linijka))
+  If cegly[i-2][6] = 6 Then
+    liczbaSzarych = liczbaSzarych + 1
+  EndIf
 endFor 
-
 For i = 0 to Array.GetItemCount(cegly) - 1
     GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
     graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
@@ -201,6 +206,7 @@ If gamePlays And gamePaused = "false"Then
     If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
+      If cegly[i][6] <> 6 Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
@@ -210,11 +216,13 @@ If gamePlays And gamePaused = "false"Then
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Górna ściana
     ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
       efektDoDodania = cegly[i][6]
+      If cegly[i][6] <> 6 Then
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
         DodajEfekt()
@@ -223,10 +231,12 @@ If gamePlays And gamePaused = "false"Then
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Lewa ściana
     ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
       x = cegly[i][1] - ballWidth
       hasHitX = "true"
+      If cegly[i][6] <> 6 Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
@@ -236,10 +246,12 @@ If gamePlays And gamePaused = "false"Then
       Shapes.SetText(scoreString, "Wynik: " + score)
       Sound.PlayClick()
       cegly[i][0] = "false"
+      EndIf
     'Prawa ściana
     ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
       x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
+      If cegly[i][6] <> 6 Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
@@ -250,6 +262,7 @@ If gamePlays And gamePaused = "false"Then
       Sound.PlayClick()
       cegly[i][0] = "false"
       endIf
+      EndIf
     EndIf
     If cegly[i][0] <> "true" then
     Shapes.Remove(graficzneCegly[i])
@@ -279,7 +292,7 @@ If gamePlays And gamePaused = "false"Then
   Shapes.Move(kreskadol, 0, y + ballWidth)
  
 EndIf
-If licznikZbitychCegielek = File.ReadLine(levelFilePath, 1) Then
+If licznikZbitychCegielek = liczbaCegielekWOgole - liczbaSzarych then
     gamePlays = "false"
     Sound.PlayChime()
   EndIf
