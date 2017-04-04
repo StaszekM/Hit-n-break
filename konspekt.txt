@@ -9,7 +9,7 @@ Cegiełki z bonusami/cegiełki specjalne
 	[GOTOWE] 2x punkty
 	Lasery
 	Piłka większa/mniejsza
-	Niezniszczalne cegiełki
+	[GOTOWE] Niezniszczalne cegiełki
 	Celownik
 Animacje
 Ikonki witaminek
