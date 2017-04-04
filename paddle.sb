@@ -33,11 +33,14 @@ kreska = Shapes.AddLine(0, 0, 0, 800)
 kreskaprawa = Shapes.AddLine(0, 0, 0, 800)
 kreskagora = Shapes.AddLine(0,0,800,0)
 kreskadol = Shapes.AddLine(0,0,800,0)
-
+Shapes.HideShape(kreska)
+Shapes.HideShape(kreskagora)
+Shapes.HideShape(kreskadol)
+Shapes.HideShape(kreskaprawa)
 'Tabela z kolorkami
 kolorki[0]="black"
 kolorki[1]="blue"
-kolorki[2]="cyan"
+kolorki[2]="#00ffff"
 kolorki[3]="gray"
 kolorki[4]="green"
 kolorki[5]="magenta"
@@ -52,11 +55,12 @@ kolorki[13]="forestgreen"
 
 'wartosc przyspieszenia
 przyspieszenie = 1.3
+czyPilkaPoszerzona = "FALSE"
 'Tabela z efektami
 wskaznikEfektu = 1
 efektDoDodania = 0
 efekty[0] = 0
-'0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka
+'0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka, 7-poszerzanie piłki, 8-celownik
 mnoznikPunktow = 1
 liczbaCegielekWOgole = File.ReadLine(levelFilePath, 1)
 
@@ -111,17 +115,29 @@ If gamePlays And gamePaused = "false"Then
       ElseIf efekty[i][0] = 3 Then
         paddleWidth = paddleWidth * 4/5
         Shapes.Remove(paddle)
-        GraphicsWindow.BrushColor = "CYAN"
+        GraphicsWindow.BrushColor = "#00ffff"
         GraphicsWindow.PenWidth = 1.5
         paddle = Shapes.AddRectangle(paddleWidth, 12)  
       ElseIf efekty[i][0] = 4 Then
         paddleWidth = paddleWidth * 5/3.5
         Shapes.Remove(paddle)
-        GraphicsWindow.BrushColor = "CYAN"
+        GraphicsWindow.BrushColor = "#00ffff"
         GraphicsWindow.PenWidth = 1.5
         paddle = Shapes.AddRectangle(paddleWidth, 12)  
       ElseIf efekty[i][0] = 5 Then
         mnoznikPunktow = mnoznikPunktow - 1
+      ElseIf efekty[i][0] = 7 Then
+        Shapes.Remove(ball)
+        GraphicsWindow.BrushColor = "#00ffff"
+        GraphicsWindow.PenWidth = 1.5
+        ballWidth = 22
+        ball = Shapes.AddEllipse(ballWidth, ballWidth)
+        czyPilkaPoszerzona = "FALSE"
+      ElseIf efekty[i][0] = 8 Then
+        Shapes.HideShape(kreska)
+        Shapes.HideShape(kreskagora)
+        Shapes.HideShape(kreskadol)
+        Shapes.HideShape(kreskaprawa)
         EndIf
      EndIf
   EndFor
@@ -221,8 +237,8 @@ If gamePlays And gamePaused = "false"Then
     ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
-      efektDoDodania = cegly[i][6]
       If cegly[i][6] <> 6 Then
+      efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
         DodajEfekt()
@@ -343,19 +359,38 @@ Sub DodajEfekt
       efekty[dlugoscTablicy][1] = liczbaIteracji + 1000
       paddleWidth = paddleWidth*5/4
       Shapes.Remove(paddle)
-      GraphicsWindow.BrushColor = "CYAN"
+      GraphicsWindow.BrushColor = "#00ffff"
       GraphicsWindow.PenWidth = 1.5
       paddle = Shapes.AddRectangle(paddleWidth, 12)
     ElseIf efekty[dlugoscTablicy][0] = 4 Then
       efekty[dlugoscTablicy][1] = liczbaIteracji + 1000
       paddleWidth = paddleWidth*3.5/5
       Shapes.Remove(paddle)
-      GraphicsWindow.BrushColor = "CYAN"
+      GraphicsWindow.BrushColor = "#00ffff"
       GraphicsWindow.PenWidth = 1.5
       paddle = Shapes.AddRectangle(paddleWidth, 12)
     ElseIf efekty[dlugoscTablicy][0] = 5 Then
       efekty[dlugoscTablicy][1] = liczbaIteracji + 10000
       mnoznikPunktow = mnoznikPunktow + 1
-    EndIf
+    ElseIf efekty[dlugoscTablicy][0] = 7 Then
+      If czyPilkaPoszerzona = "FALSE" Then
+        indeksEfektuPoszerzenia = dlugoscTablicy
+        efekty[indeksEfektuPoszerzenia][1] = liczbaIteracji + 5000 
+        Shapes.Remove(ball)
+        GraphicsWindow.BrushColor = "#00ffff"
+        GraphicsWindow.PenWidth = 1.5
+        ballWidth = 30
+        ball = Shapes.AddEllipse(ballWidth, ballWidth)
+        czyPilkaPoszerzona = "TRUE"
+      Else
+        efekty[indeksEfektuPoszerzenia][1] = liczbaIteracji + 5000
+      EndIf
+    ElseIf efekty[dlugoscTablicy][0] = 8 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
+      Shapes.ShowShape(kreska)
+      Shapes.ShowShape(kreskagora)
+      Shapes.ShowShape(kreskadol)
+      Shapes.ShowShape(kreskaprawa)
+    Endif
 EndSub
   
