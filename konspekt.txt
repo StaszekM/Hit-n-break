@@ -8,7 +8,7 @@ Cegiełki z bonusami/cegiełki specjalne
 	Więcej piłek
 	[GOTOWE] 2x punkty
 	Lasery
-	Piłka większa/mniejsza
+	[GOTOWE] Piłka większa/mniejsza
 	[GOTOWE] Niezniszczalne cegiełki
 	Celownik
 Animacje
