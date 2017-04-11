@@ -10,7 +10,7 @@ Cegiełki z bonusami/cegiełki specjalne
 	Lasery
 	[GOTOWE] Piłka większa/mniejsza
 	[GOTOWE] Niezniszczalne cegiełki
-	Celownik
+	[GOTOWE] Celownik
 Animacje
 Ikonki witaminek
 Kolorowe plamki przypominające piłkę
