@@ -19,7 +19,7 @@ licznikZbitychCegielek = 0
 'liczbaIteracji - od 0 do końca poziomu
 liczbaIteracji = 0
 'x, y - pozycja początkowa kulki
-x = 610
+x = 450
 y = 430
 Shapes.Move(ball, x, y)
 
@@ -219,7 +219,7 @@ If gamePlays And gamePaused = "false"Then
     'Odbicie od cegiełki
     'Dolna ściana
     If cegly[i][0] Then
-    If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] + cegly[i][4] - Math.Abs(deltaY) then
+      If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] And y + (ballWidth/2) > cegly[i][2] + cegly[i][4]  then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
       If cegly[i][6] <> 6 Then
@@ -234,7 +234,7 @@ If gamePlays And gamePaused = "false"Then
       cegly[i][0] = "false"
       EndIf
     'Górna ściana
-    ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + Math.Abs(deltaY) then
+    ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + cegly[i][4] And y + (ballWidth/2) < cegly[i][2] then
       y = cegly[i][2] - ballWidth
       hasHitY = "true"
       If cegly[i][6] <> 6 Then
@@ -249,7 +249,7 @@ If gamePlays And gamePaused = "false"Then
       cegly[i][0] = "false"
       EndIf
     'Lewa ściana
-    ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + Math.Abs(deltaX) And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] Then 
+    ElseIf x + ballWidth >= cegly[i][1] And x + ballWidth < cegly[i][1] + cegly[i][3] And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] And x + (ballWidth/2) < cegly[i][1] Then 
       x = cegly[i][1] - ballWidth
       hasHitX = "true"
       If cegly[i][6] <> 6 Then
@@ -264,7 +264,7 @@ If gamePlays And gamePaused = "false"Then
       cegly[i][0] = "false"
       EndIf
     'Prawa ściana
-    ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1] + cegly[i][3] - Math.Abs(deltaX)  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] then
+    ElseIf x <= cegly[i][1] + cegly[i][3] And x > cegly[i][1]  And y <= (cegly[i][2] + cegly[i][4]) And y + ballWidth >= cegly[i][2] And x + (ballWidth/2) > cegly[i][1] + cegly[i][3] then
       x = cegly[i][1] + cegly[i][3]
       hasHitX = "true"
       If cegly[i][6] <> 6 Then
