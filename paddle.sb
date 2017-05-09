@@ -110,7 +110,7 @@ For i = 0 to Array.GetItemCount(cegly) - 1
         fakePileczki[i][j][2] = cegly[i][2] + (cegly[i][4]/2) - 11
         fakePileczki[i][j][3] = -0.1 * Math.GetRandomNumber(30)
         fakePileczki[i][j][4] = Math.SquareRoot(12 - Math.Power(fakePileczki[i][j][3], 2))
-        'Shapes.SetOpacity(fakePileczki[i], 0)
+        Shapes.SetOpacity(fakePileczki[i][j][0], 0)
         Shapes.Move(fakePileczki[i][j][0], fakePileczki[i][j][1], fakePileczki[i][j][2])
       EndFor
     EndIf
@@ -165,7 +165,7 @@ If gamePlays And gamePaused = "false"Then
         Shapes.HideShape(kreskaprawa)
       ElseIf efekty[i][0] = 9 Then
         For i = 0 to liczbaFakePileczek - 1
-          Shapes.SetOpacity(fakePileczki[wskaznikTablicyFakeGrup][i][0], 0)
+          Shapes.Remove(fakePileczki[tablicaFakeGrup[wskaznikTablicyFakeGrup]][i][0])
         EndFor
           wskaznikTablicyFakeGrup = wskaznikTablicyFakeGrup + 1
       EndIf
@@ -243,7 +243,7 @@ If gamePlays And gamePaused = "false"Then
   For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
     'Dolna ściana
-    If cegly[i][0] Then
+    If cegly[i][0] And Math.Abs(y - ((0.5*cegly[i][4]) + cegly[i][2])) < 30  Then
       If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] And y + (ballWidth/2) > cegly[i][2] + cegly[i][4]  then
       y = cegly[i][2] + cegly[i][4]
       hasHitY = "true"
@@ -431,8 +431,18 @@ Sub DodajEfekt
     ElseIf efekty[dlugoscTablicy][0] = 9 Then
       efekty[dlugoscTablicy][1] = liczbaIteracji + 3000
       tablicaFakeGrup[Array.GetItemCount(tablicaFakeGrup)] = indeksFakeCegielki
-      For i = 0 to liczbaFakeCegielek - 1
-         Shapes.SetOpacity(fakePileczki[indeksFakeCegielki][i][0], 100)
+      For e = 0 to liczbaFakePileczek - 1
+        Shapes.SetOpacity(fakePileczki[indeksFakeCegielki][e][0], 100)
+        If hasHitX Then
+          fakePileczki[indeksFakeCegielki][e][3] = (deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]
+        Else
+          fakePileczki[indeksFakeCegielki][e][3] = -(deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]
+        EndIf
+        If hasHitY Then
+          fakePileczki[indeksFakeCegielki][e][4] = -1*(deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]
+        Else
+          fakePileczki[indeksFakeCegielki][e][4] = (deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]
+        EndIf
       EndFor
     EndIf
 EndSub
