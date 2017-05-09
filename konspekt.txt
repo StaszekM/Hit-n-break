@@ -5,15 +5,13 @@ Cegiełki z bonusami/cegiełki specjalne
 	[GOTOWE] Piłka lata szybciej
 	[GOTOWE] Piłka lata wolniej
 	[GOTOWE] Szersza/węższa platforma
-	Więcej piłek
 	[GOTOWE] 2x punkty
-	Lasery
 	[GOTOWE] Piłka większa/mniejsza
 	[GOTOWE] Niezniszczalne cegiełki
 	[GOTOWE] Celownik
 Animacje
 Ikonki witaminek
-Kolorowe plamki przypominające piłkę
+[GOTOWE] Kolorowe plamki przypominające piłkę
 Grafika
 Dźwięki/muzyka
 Rzeczy do odblokowania za punkty
