@@ -7,11 +7,12 @@ paddleWidth = 150
 GraphicsWindow.PenWidth = 1.5
 paddle = Shapes.AddRectangle(paddleWidth, 12)
 ballWidth = 22
+liczbaFakePileczek = 5
 ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
+levelFilePath = "C:\Users\Catwomen\Desktop\temp.txt"
 pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
@@ -60,12 +61,13 @@ czyPilkaPoszerzona = "FALSE"
 wskaznikEfektu = 1
 efektDoDodania = 0
 efekty[0] = 0
-'0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka, 7-poszerzanie piłki, 8-celownik
+'0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-węższa platforma, 5-mnożnik punktów, 6-niezniszczalna cegiełka, 7-poszerzanie piłki, 8-celownik, 9 - fake piłeczki
 mnoznikPunktow = 1
 liczbaCegielekWOgole = File.ReadLine(levelFilePath, 1)
 
 'Pierwsza cegiełka yayyyy!
 liczbaSzarych = 0
+liczbaFakeCegielek = 0
 For i = 2 to liczbaCegielekWOgole + 1
   linijka = File.ReadLine(levelFilePath, i)
   cegly[i-2][0] = "true"
@@ -77,12 +79,15 @@ For i = 2 to liczbaCegielekWOgole + 1
   If cegly[i-2][6] = 6 Then
     liczbaSzarych = liczbaSzarych + 1
   EndIf
+  If cegly[i-2][6] = 9 Then
+    liczbaFakeCegielek = liczbaFakeCegielek + 1
+  EndIf
 endFor 
 For i = 0 to Array.GetItemCount(cegly) - 1
     GraphicsWindow.BrushColor = kolorki[cegly[i][5]]
     graficzneCegly[i] = Shapes.AddRectangle(cegly[i][3], cegly[i][4])
     Shapes.Move(graficzneCegly[i], cegly[i][1], cegly[i][2])
-  endFor 
+endFor 
 
 GraphicsWindow.BrushColor = kolorki[1]
 GraphicsWindow.FontSize = 22
@@ -93,6 +98,26 @@ Shapes.Move(tekstPauzy, GraphicsWindow.Width/2 - 418/2, GraphicsWindow.Height/2 
 Shapes.HideShape(tekstPauzy)
 GraphicsWindow.KeyDown = OnKeyDown
 scoreString = Shapes.AddText("Wynik: " + score)
+
+For i = 0 to Array.GetItemCount(cegly) - 1
+  If cegly[i][6] = 9 Then
+      GraphicsWindow.BrushColor = "#00ffff"
+      GraphicsWindow.PenWidth = 1.5
+      For j = 0 to liczbaFakePileczek - 1
+        fakePileczki[i][j][0] = Shapes.AddEllipse(22, 22)
+        '0 - graficzna reprezentacja, 1 - współrz. X, 2 - współrz. Y, 3 - deltaX, 4 - deltaY
+        fakePileczki[i][j][1] = cegly[i][1] + (cegly[i][3]/2) - 11
+        fakePileczki[i][j][2] = cegly[i][2] + (cegly[i][4]/2) - 11
+        fakePileczki[i][j][3] = -0.1 * Math.GetRandomNumber(30)
+        fakePileczki[i][j][4] = Math.SquareRoot(12 - Math.Power(fakePileczki[i][j][3], 2))
+        'Shapes.SetOpacity(fakePileczki[i], 0)
+        Shapes.Move(fakePileczki[i][j][0], fakePileczki[i][j][1], fakePileczki[i][j][2])
+      EndFor
+    EndIf
+endFor 
+wskaznikTablicyFakeGrup = 0
+tablicaFakeGrup = 0
+
 Program.Delay(1500)
 gamePlays = "true"
 
@@ -138,39 +163,14 @@ If gamePlays And gamePaused = "false"Then
         Shapes.HideShape(kreskagora)
         Shapes.HideShape(kreskadol)
         Shapes.HideShape(kreskaprawa)
-        EndIf
+      ElseIf efekty[i][0] = 9 Then
+        For i = 0 to liczbaFakePileczek - 1
+          Shapes.SetOpacity(fakePileczki[wskaznikTablicyFakeGrup][i][0], 0)
+        EndFor
+          wskaznikTablicyFakeGrup = wskaznikTablicyFakeGrup + 1
+      EndIf
      EndIf
   EndFor
-  'If wskaznikEfektu < Array.GetItemCount(efekty) Then
-    'If efekty[wskaznikEfektu][1] = liczbaIteracji Then
-      'usun:
-      'If efekty[wskaznikEfektu][0] = 1 Then
-        'deltaX = deltaX/przyspieszenie
-        'deltaY = deltaY/przyspieszenie
-      'ElseIf efekty[wskaznikEfektu][0] = 2 Then
-        'deltaX = deltaX*przyspieszenie
-        'deltaY = deltaY*przyspieszenie
-      'ElseIf efekty[wskaznikEfektu][0] = 3 Then
-        'paddleWidth = paddleWidth * 4/5
-        'Shapes.Remove(paddle)
-        'GraphicsWindow.BrushColor = "CYAN"
-        'GraphicsWindow.PenWidth = 1.5
-        'paddle = Shapes.AddRectangle(paddleWidth, 12)  
-      'ElseIf efekty[wskaznikEfektu][0] = 4 Then
-        'paddleWidth = paddleWidth * 5/3.5
-        'Shapes.Remove(paddle)
-        'GraphicsWindow.BrushColor = "CYAN"
-        'GraphicsWindow.PenWidth = 1.5
-        'paddle = Shapes.AddRectangle(paddleWidth, 12)  
-      'ElseIf efekty[wskaznikEfektu][0] = 5 Then
-        'mnoznikPunktow = mnoznikPunktow - 1
-    'EndIf
-      'wskaznikEfektu = wskaznikEfektu + 1
-      'If wskaznikEfektu < Array.GetItemCount(efekty) And efekty[wskaznikEfektu][1] = liczbaIteracji Then
-        'Goto usun
-      'Endif
-     'EndIf
-   'Endif
       
   
   'Pomocnicze zmienne przeciw konfliktom
@@ -190,6 +190,31 @@ If gamePlays And gamePaused = "false"Then
     deltaY = -deltaY
   EndIf
   
+  'Fake piłeczki - odbicie od ściany
+  If Array.GetItemCount(tablicaFakeGrup) <> wskaznikTablicyFakeGrup Then
+  For u = wskaznikTablicyFakeGrup to Array.GetItemCount(tablicaFakeGrup) - 1
+      i = tablicaFakeGrup[u]
+      For j = 0 to liczbaFakePileczek - 1
+        If fakePileczki[i][j][1] >= gw - 22 Then
+          fakePileczki[i][j][1] = gw - 22
+          fakePileczki[i][j][3] = -1 * fakePileczki[i][j][3]
+        ElseIf fakePileczki[i][j][1] <= 0 Then
+          fakePileczki[i][j][1] = 0
+          fakePileczki[i][j][3] = -1 * fakePileczki[i][j][3]
+        EndIf
+        If fakePileczki[i][j][2] >= gh - 22 Then
+          fakePileczki[i][j][2] = gh - 22
+          fakePileczki[i][j][4] = -1 * fakePileczki[i][j][4]
+        ElseIf fakePileczki[i][j][2] < 0 Then
+          fakePileczki[i][j][2] = 0
+          fakePileczki[i][j][4] = -1 * fakePileczki[i][j][4]
+        EndIf
+        Shapes.Move(fakePileczki[i][j][0], fakePileczki[i][j][1] + fakePileczki[i][j][3], fakePileczki[i][j][2] + fakePileczki[i][j][4])
+        fakePileczki[i][j][1] = fakePileczki[i][j][1] + fakePileczki[i][j][3]
+        fakePileczki[i][j][2] = fakePileczki[i][j][2] + fakePileczki[i][j][4]
+      EndFor
+  endFor 
+  EndIf
   'Blok kodu określający miejsce uderzenia o platformę i ustalenie nowego deltaX
   padX = Shapes.GetLeft(paddle)
   If (y > gh - (ballWidth + 12) And x + ballWidth >= padX And x <= padX + paddleWidth) Then
@@ -226,6 +251,9 @@ If gamePlays And gamePaused = "false"Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
+        If efektDoDodania = 9 Then
+          indeksFakeCegielki = i
+        EndIf
         DodajEfekt()
       EndIf
       score = score + 1*mnoznikPunktow
@@ -241,6 +269,9 @@ If gamePlays And gamePaused = "false"Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
+        If efektDoDodania = 9 Then
+          indeksFakeCegielki = i
+        EndIf
         DodajEfekt()
       EndIf
       score = score + 1*mnoznikPunktow
@@ -256,6 +287,9 @@ If gamePlays And gamePaused = "false"Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
+        If efektDoDodania = 9 Then
+          indeksFakeCegielki = i
+        EndIf
         DodajEfekt()
       EndIf
       score = score + 1*mnoznikPunktow
@@ -271,6 +305,9 @@ If gamePlays And gamePaused = "false"Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
       If efektDoDodania > 0 Then
+        If efektDoDodania = 9 Then
+          indeksFakeCegielki = i
+        EndIf
         DodajEfekt()
       EndIf
       score = score + 1*mnoznikPunktow
@@ -391,6 +428,12 @@ Sub DodajEfekt
       Shapes.ShowShape(kreskagora)
       Shapes.ShowShape(kreskadol)
       Shapes.ShowShape(kreskaprawa)
-    Endif
+    ElseIf efekty[dlugoscTablicy][0] = 9 Then
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 3000
+      tablicaFakeGrup[Array.GetItemCount(tablicaFakeGrup)] = indeksFakeCegielki
+      For i = 0 to liczbaFakeCegielek - 1
+         Shapes.SetOpacity(fakePileczki[indeksFakeCegielki][i][0], 100)
+      EndFor
+    EndIf
 EndSub
   
