@@ -12,7 +12,7 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\Catwomen\Desktop\temp.txt"
+levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
 pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
@@ -56,6 +56,7 @@ kolorki[13]="forestgreen"
 
 'wartosc przyspieszenia
 przyspieszenie = 1.3
+liczbaPrzyspieszen = 0
 czyPilkaPoszerzona = "FALSE"
 'Tabela z efektami
 wskaznikEfektu = 1
@@ -132,6 +133,7 @@ If gamePlays And gamePaused = "false"Then
   For i = 0 To Array.GetItemCount(efekty)-1
     If efekty[i][1] = liczbaIteracji Then
       If efekty[i][0] = 1 Then
+        liczbaPrzyspieszen = liczbaPrzyspieszen - 1
         deltaX = deltaX/przyspieszenie
         deltaY = deltaY/przyspieszenie
       ElseIf efekty[i][0] = 2 Then
@@ -152,12 +154,16 @@ If gamePlays And gamePaused = "false"Then
       ElseIf efekty[i][0] = 5 Then
         mnoznikPunktow = mnoznikPunktow - 1
       ElseIf efekty[i][0] = 7 Then
-        Shapes.Remove(ball)
-        GraphicsWindow.BrushColor = "#00ffff"
-        GraphicsWindow.PenWidth = 1.5
-        ballWidth = 22
-        ball = Shapes.AddEllipse(ballWidth, ballWidth)
+        ballWidth = ballWidth * 22/30
+        Shapes.Zoom(ball, 1, 1)
         czyPilkaPoszerzona = "FALSE"
+        For f = 0 to Array.GetItemCount(cegly) - 1
+          If cegly[f][6] = 9 Then
+            For g = 0 to liczbaFakePileczek - 1
+              Shapes.Zoom(fakePileczki[f][g][0], 1, 1)
+            EndFor
+          EndIf
+        endFor 
       ElseIf efekty[i][0] = 8 Then
         Shapes.HideShape(kreska)
         Shapes.HideShape(kreskagora)
@@ -240,13 +246,17 @@ If gamePlays And gamePaused = "false"Then
   
   
   
-  For i = 0 to Array.GetItemCount(cegly) - 1
+For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
     'Dolna ściana
     If cegly[i][0] And Math.Abs(y - ((0.5*cegly[i][4]) + cegly[i][2])) < 30  Then
       If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] And y + (ballWidth/2) > cegly[i][2] + cegly[i][4]  then
-      y = cegly[i][2] + cegly[i][4]
-      hasHitY = "true"
+        y = cegly[i][2] + cegly[i][4]
+        If deltaY/Math.Abs(deltaY) < 0 Then
+          hasHitY = "true"
+        Else
+          hasHitX = "true"
+        EndIf  
       If cegly[i][6] <> 6 Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
@@ -264,7 +274,11 @@ If gamePlays And gamePaused = "false"Then
     'Górna ściana
     ElseIf x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y + ballWidth >= cegly[i][2] And y + ballWidth < cegly[i][2] + cegly[i][4] And y + (ballWidth/2) < cegly[i][2] then
       y = cegly[i][2] - ballWidth
-      hasHitY = "true"
+      If deltaY/Math.Abs(deltaY) > 0 Then
+          hasHitY = "true"
+        Else
+          hasHitX = "true"
+      EndIf    
       If cegly[i][6] <> 6 Then
       efektDoDodania = cegly[i][6]
       licznikZbitychCegielek = licznikZbitychCegielek + 1
@@ -385,7 +399,8 @@ Sub DodajEfekt
   '5000 - 5 s
   
   If efekty[dlugoscTablicy][0] = 1 Then
-      efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
+    efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
+    liczbaPrzyspieszen = liczbaPrzyspieszen + 1
       deltaX = deltaX*przyspieszenie
       deltaY = deltaY*przyspieszenie
     ElseIf efekty[dlugoscTablicy][0] = 2 Then
@@ -413,12 +428,16 @@ Sub DodajEfekt
       If czyPilkaPoszerzona = "FALSE" Then
         indeksEfektuPoszerzenia = dlugoscTablicy
         efekty[indeksEfektuPoszerzenia][1] = liczbaIteracji + 5000 
-        Shapes.Remove(ball)
-        GraphicsWindow.BrushColor = "#00ffff"
-        GraphicsWindow.PenWidth = 1.5
-        ballWidth = 30
-        ball = Shapes.AddEllipse(ballWidth, ballWidth)
+        ballWidth = ballWidth * 30/22
+        Shapes.Zoom(ball, 30/22, 30/22)
         czyPilkaPoszerzona = "TRUE"
+        For f = 0 to Array.GetItemCount(cegly) - 1
+          If cegly[f][6] = 9 Then
+            For g = 0 to liczbaFakePileczek - 1
+              Shapes.Zoom(fakePileczki[f][g][0], 30/22, 30/22)
+            EndFor
+          EndIf
+        endFor 
       Else
         efekty[indeksEfektuPoszerzenia][1] = liczbaIteracji + 5000
       EndIf
@@ -429,19 +448,19 @@ Sub DodajEfekt
       Shapes.ShowShape(kreskadol)
       Shapes.ShowShape(kreskaprawa)
     ElseIf efekty[dlugoscTablicy][0] = 9 Then
-      efekty[dlugoscTablicy][1] = liczbaIteracji + 3000
+      efekty[dlugoscTablicy][1] = liczbaIteracji + 5000
       tablicaFakeGrup[Array.GetItemCount(tablicaFakeGrup)] = indeksFakeCegielki
       For e = 0 to liczbaFakePileczek - 1
         Shapes.SetOpacity(fakePileczki[indeksFakeCegielki][e][0], 100)
         If hasHitX Then
-          fakePileczki[indeksFakeCegielki][e][3] = (deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]
+          fakePileczki[indeksFakeCegielki][e][3] = (deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]*Math.Power(przyspieszenie, liczbaPrzyspieszen)
         Else
-          fakePileczki[indeksFakeCegielki][e][3] = -(deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]
+          fakePileczki[indeksFakeCegielki][e][3] = -(deltaX/Math.Abs(deltaX))*fakePileczki[indeksFakeCegielki][e][3]*Math.Power(przyspieszenie, liczbaPrzyspieszen)
         EndIf
         If hasHitY Then
-          fakePileczki[indeksFakeCegielki][e][4] = -1*(deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]
+          fakePileczki[indeksFakeCegielki][e][4] = -1*(deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]*Math.Power(przyspieszenie, liczbaPrzyspieszen)
         Else
-          fakePileczki[indeksFakeCegielki][e][4] = (deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]
+          fakePileczki[indeksFakeCegielki][e][4] = (deltaY/Math.Abs(deltaY))*fakePileczki[indeksFakeCegielki][e][4]*Math.Power(przyspieszenie, liczbaPrzyspieszen)
         EndIf
       EndFor
     EndIf
