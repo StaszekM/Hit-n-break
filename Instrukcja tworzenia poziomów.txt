@@ -1,10 +1,10 @@
-1. Program czyta plik poziomu linijka po linijce i odczytuje z ka¿dej informacje.
-2. Pierwsza linijka jest zarezerwowana na ³¹czn¹ liczbê cegie³ na planszy.
-3. Kolejne linijki oznaczaj¹ kolejne ceg³y i ich parametry wg wzoru:
-pozycja X lewej krawêdzi,pozycja Y górnej krawêdzi,szerokoœæ,wysokoœæ,kolor,funkcja specjalna
+1. Program czyta plik poziomu linijka po linijce i odczytuje z kaÅ¼dej informacje.
+2. Pierwsza linijka jest zarezerwowana na Å‚Ä…cznÄ… liczbÄ™ cegieÅ‚ na planszy.
+3. Kolejne linijki oznaczajÄ… kolejne cegÅ‚y i ich parametry wg wzoru:
+pozycja X lewej krawÄ™dzi,pozycja Y gÃ³rnej krawÄ™dzi,szerokoÅ›Ä‡,wysokoÅ›Ä‡,kolor,funkcja specjalna (bez spacji)
 
 gdzie:
-kolor przyjmuje wartoœæ od 0 do 13:
+kolor przyjmuje wartoÅ›Ä‡ od 0 do 13:
 kolorki[0]="black"
 kolorki[1]="blue"
 kolorki[2]="#00ffff"
@@ -20,38 +20,38 @@ kolorki[11]="skyblue"
 kolorki[12]="lightseagreen"
 kolorki[13]="forestgreen"
 
-funkcja specjalna przyjmuje wartoœæ od 0 do 9
-0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-wê¿sza platforma,
-5-mno¿nik punktów, 6-niezniszczalna cegie³ka,
-7-poszerzanie pi³ki, 8-celownik, 9 - fake pi³eczki
+funkcja specjalna przyjmuje wartoÅ›Ä‡ od 0 do 9
+0-brak efektu, 1-przyspieszenie, 2-spowolnienie, 3-szersza platforma, 4-wÄ™Å¼sza platforma,
+5-mnoÅ¼nik punktÃ³w, 6-niezniszczalna cegieÅ‚ka,
+7-poszerzanie piÅ‚ki, 8-celownik, 9 - fake piÅ‚eczki
 
-Uwagi co do wymiarów, pozycji:
-Standardowo cegie³ka ma wymiary 50 na 20 i lepiej dla zachowania jednolitoœci
-poprzestaæ na takowych.
-Pozycja X przyjmuje wartoœæ od 0 do 750, czyli maksymalnej, jak¹ mo¿e przyj¹æ tak, aby cegie³ka
-zmieœci³a siê na planszy i nie wystawa³a poza praw¹ krawêdŸ okna:
-xMax = szerokoœæ okna - szerokoœæ cegie³ki = 800 - 50 = 750
-Pozycja Y przyjmuje wartoœæ od 0 do oko³o 2/3 wysokoœci planszy, czyli od 0 do 400
+Uwagi co do wymiarÃ³w, pozycji:
+Standardowo cegieÅ‚ka ma wymiary 50 na 20 i lepiej dla zachowania jednolitoÅ›ci
+poprzestaÄ‡ na takowych.
+Pozycja X przyjmuje wartoÅ›Ä‡ od 0 do 750, czyli maksymalnej, jakÄ… moÅ¼e przyjÄ…Ä‡ tak, aby cegieÅ‚ka
+zmieÅ›ciÅ‚a siÄ™ na planszy i nie wystawaÅ‚a poza prawÄ… krawÄ™dÅº okna:
+xMax = szerokoÅ›Ä‡ okna - szerokoÅ›Ä‡ cegieÅ‚ki = 800 - 50 = 750
+Pozycja Y przyjmuje wartoÅ›Ä‡ od 0 do okoÅ‚o 2/3 wysokoÅ›ci planszy, czyli od 0 do 400
 
-Uk³ad wspó³rzêdnych
-Uk³ad naszego okna nie jest klasycznym uk³adem kartezjañskim, "iksy" rosn¹ od lewej do prawej,
-a "igreki" od g ó r y do d o ³ u, weŸcie to pod uwagê przy umieszczaniu cegie³ek na
+UkÅ‚ad wspÃ³Å‚rzÄ™dnych
+UkÅ‚ad naszego okna nie jest klasycznym ukÅ‚adem kartezjaÅ„skim, "iksy" rosnÄ… od lewej do prawej,
+a "igreki" od g Ã³ r y do d o Å‚ u, weÅºcie to pod uwagÄ™ przy umieszczaniu cegieÅ‚ek na
 planszy.
 
 Uwagi co do witaminek:
-- Witaminki mog¹ byæ ukryte w cegie³kach o dowolnych kolorach, wiêc mo¿na robiæ pu³apki, ale
-lepiej te niezbijalne dla porz¹dku ustawiæ jako szare.
-- Nie spamujcie nadmiern¹ liczb¹ cegie³ek z fake pi³eczkami, to zamuli wam poziom.
-- Jeœli pi³ka zbierze zbyt du¿o przyœpieszeñ naraz bez ¿adnego spowolnienia, to mo¿e
-(w rzadkich przypadkach) przebijaæ siê przez cegie³ki.
+- Witaminki mogÄ… byÄ‡ ukryte w cegieÅ‚kach o dowolnych kolorach, wiÄ™c moÅ¼na robiÄ‡ puÅ‚apki, ale
+lepiej te niezbijalne dla porzÄ…dku ustawiÄ‡ jako szare.
+- Nie spamujcie nadmiernÄ… liczbÄ… cegieÅ‚ek z fake piÅ‚eczkami, to zamuli wam poziom.
+- JeÅ›li piÅ‚ka zbierze zbyt duÅ¼o przyÅ›pieszeÅ„ naraz bez Å¼adnego spowolnienia, to moÅ¼e
+(w rzadkich przypadkach) przebijaÄ‡ siÄ™ przez cegieÅ‚ki.
 
-Aby przetestowaæ poziom, zapiszcie go w formacie TXT, znajdŸcie na pocz¹tku
-kodu gry(ok. 15 linijki) zmienn¹ levelFilePath i zmieñcie jej wartoœæ na bezwzglêdny adres
+Aby przetestowaÄ‡ poziom, zapiszcie go w formacie TXT, znajdÅºcie na poczÄ…tku
+kodu gry(ok. 15 linijki) zmiennÄ… levelFilePath i zmieÅ„cie jej wartoÅ›Ä‡ na bezwzglÄ™dny adres
 do pliku txt z poziomem.
 
-Przyk³adowy plik TXT z poziomem ³aduj¹cym 5 cegie³ek obok siebie koloru czerwonego bez efektu
-i jednej niebieskiej przyœpieszaj¹cej, u³o¿one w rz¹dku od lewej do prawej 20 pikseli
-od lewej i górnej krawêdzi:
+PrzykÅ‚adowy plik TXT z poziomem Å‚adujÄ…cym 5 cegieÅ‚ek obok siebie koloru czerwonego bez efektu
+i jednej niebieskiej przyÅ›pieszajÄ…cej, uÅ‚oÅ¼one w rzÄ…dku od lewej do prawej 20 pikseli
+od lewej i gÃ³rnej krawÄ™dzi:
 
 6
 20,20,50,20,6,0
