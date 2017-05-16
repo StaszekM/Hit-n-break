@@ -58,7 +58,9 @@ kolorki[13]="forestgreen"
 przyspieszenie = 1.3
 liczbaPrzyspieszen = 0
 czyPilkaPoszerzona = "FALSE"
+przesuwanie = 0
 'Tabela z efektami
+liczbaNieaktywnychEfektow = 0
 wskaznikEfektu = 1
 efektDoDodania = 0
 efekty[0] = 0
@@ -129,9 +131,13 @@ If gamePlays And gamePaused = "false"Then
   gh = GraphicsWindow.Height
 
   'Sprawdzanie czy efekty przestają działać
-  For i = wskaznikEfektu To Array.GetItemCount(efekty)-1
+  For i = 0 To Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow
     If efekty[i][1] = liczbaIteracji Then
-      wskaznikEfektu = wskaznikEfektu + 1
+      liczbaNieaktywnychEfektow = liczbaNieaktywnychEfektow + 1
+      If i <> Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow Then
+        efekty[i][0] = efekty[Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow][0]
+        efekty[i][1] = efekty[Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow][1]
+      EndIf
       If efekty[i][0] = 1 Then
         liczbaPrzyspieszen = liczbaPrzyspieszen - 1
         deltaX = deltaX/przyspieszenie
@@ -157,6 +163,7 @@ If gamePlays And gamePaused = "false"Then
         ballWidth = ballWidth * 22/30
         Shapes.Zoom(ball, 1, 1)
         czyPilkaPoszerzona = "FALSE"
+        przesuwanie = 0
         For f = 0 to Array.GetItemCount(cegly) - 1
           If cegly[f][6] = 9 Then
             For g = 0 to liczbaFakePileczek - 1
@@ -174,7 +181,7 @@ If gamePlays And gamePaused = "false"Then
           Shapes.Remove(fakePileczki[tablicaFakeGrup[wskaznikTablicyFakeGrup]][c][0])
         EndFor
           wskaznikTablicyFakeGrup = wskaznikTablicyFakeGrup + 1
-      EndIf
+        EndIf
      EndIf
   EndFor
       
@@ -352,11 +359,12 @@ For i = 0 to Array.GetItemCount(cegly) - 1
   paddleX = GraphicsWindow.MouseX
   Shapes.Move(paddle, paddleX - paddleWidth/2, GraphicsWindow.Height - 12)
   
+  
   Shapes.Move(ball, x, y)
-  Shapes.Move(kreska, x, 0)
-  Shapes.Move(kreskaprawa, x + ballWidth, 0)
-  Shapes.Move(kreskagora,0, y)
-  Shapes.Move(kreskadol, 0, y + ballWidth)
+  Shapes.Move(kreska, x - przesuwanie, 0)
+  Shapes.Move(kreskaprawa, x - przesuwanie + ballWidth, 0)
+  Shapes.Move(kreskagora, 0, y - przesuwanie)
+  Shapes.Move(kreskadol, 0, y - przesuwanie + ballWidth)
  
 EndIf
 If licznikZbitychCegielek = liczbaCegielekWOgole - liczbaSzarych then
@@ -367,6 +375,7 @@ If licznikZbitychCegielek = liczbaCegielekWOgole - liczbaSzarych then
     gamePlays = "false"
     Sound.PlayBellRing()
   Else
+    Program.Delay(5)
     liczbaIteracji = liczbaIteracji + 5
     Goto start
   EndIf      
@@ -393,7 +402,7 @@ Sub OnKeyDown
 EndSub
 
 Sub DodajEfekt
-  dlugoscTablicy = Array.GetItemCount(efekty)
+  dlugoscTablicy = Array.GetItemCount(efekty)-liczbaNieaktywnychEfektow
   efekty[dlugoscTablicy][0] = efektDoDodania
   '5000 - 5 s
   
@@ -430,6 +439,7 @@ Sub DodajEfekt
         ballWidth = ballWidth * 30/22
         Shapes.Zoom(ball, 30/22, 30/22)
         czyPilkaPoszerzona = "TRUE"
+        przesuwanie  = 4
         For f = 0 to Array.GetItemCount(cegly) - 1
           If cegly[f][6] = 9 Then
             For g = 0 to liczbaFakePileczek - 1
