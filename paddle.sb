@@ -127,11 +127,11 @@ start:
 If gamePlays And gamePaused = "false"Then
   gw = GraphicsWindow.Width
   gh = GraphicsWindow.Height
-  
-  
+
   'Sprawdzanie czy efekty przestają działać
-  For i = 0 To Array.GetItemCount(efekty)-1
+  For i = wskaznikEfektu To Array.GetItemCount(efekty)-1
     If efekty[i][1] = liczbaIteracji Then
+      wskaznikEfektu = wskaznikEfektu + 1
       If efekty[i][0] = 1 Then
         liczbaPrzyspieszen = liczbaPrzyspieszen - 1
         deltaX = deltaX/przyspieszenie
@@ -170,8 +170,8 @@ If gamePlays And gamePaused = "false"Then
         Shapes.HideShape(kreskadol)
         Shapes.HideShape(kreskaprawa)
       ElseIf efekty[i][0] = 9 Then
-        For i = 0 to liczbaFakePileczek - 1
-          Shapes.Remove(fakePileczki[tablicaFakeGrup[wskaznikTablicyFakeGrup]][i][0])
+        For c = 0 to liczbaFakePileczek - 1
+          Shapes.Remove(fakePileczki[tablicaFakeGrup[wskaznikTablicyFakeGrup]][c][0])
         EndFor
           wskaznikTablicyFakeGrup = wskaznikTablicyFakeGrup + 1
       EndIf
@@ -249,7 +249,7 @@ If gamePlays And gamePaused = "false"Then
 For i = 0 to Array.GetItemCount(cegly) - 1
     'Odbicie od cegiełki
     'Dolna ściana
-    If cegly[i][0] And Math.Abs(y - ((0.5*cegly[i][4]) + cegly[i][2])) < 30  Then
+    If cegly[i][0] And Math.Abs(x - ((0.5*cegly[i][3]) + cegly[i][1])) < 50  Then
       If x + ballWidth >= cegly[i][1] And x <= (cegly[i][1] + cegly[i][3]) And y <= cegly[i][2] + cegly[i][4] And y > cegly[i][2] And y + (ballWidth/2) > cegly[i][2] + cegly[i][4]  then
         y = cegly[i][2] + cegly[i][4]
         If deltaY/Math.Abs(deltaY) < 0 Then
@@ -367,7 +367,6 @@ If licznikZbitychCegielek = liczbaCegielekWOgole - liczbaSzarych then
     gamePlays = "false"
     Sound.PlayBellRing()
   Else
-    Program.Delay(5)
     liczbaIteracji = liczbaIteracji + 5
     Goto start
   EndIf      
