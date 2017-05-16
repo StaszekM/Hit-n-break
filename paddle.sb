@@ -12,7 +12,7 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\uczen\Desktop\temp.txt"
+levelFilePath = "C:\Users\Iwo\Desktop\temp.txt"
 pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
@@ -60,7 +60,7 @@ liczbaPrzyspieszen = 0
 czyPilkaPoszerzona = "FALSE"
 przesuwanie = 0
 'Tabela z efektami
-liczbaNieaktywnychEfektow = 0
+liczbaAktywnychEfektow = 0
 wskaznikEfektu = 1
 efektDoDodania = 0
 efekty[0] = 0
@@ -131,13 +131,8 @@ If gamePlays And gamePaused = "false"Then
   gh = GraphicsWindow.Height
 
   'Sprawdzanie czy efekty przestają działać
-  For i = 0 To Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow
+  For i = 0 To liczbaAktywnychEfektow
     If efekty[i][1] = liczbaIteracji Then
-      liczbaNieaktywnychEfektow = liczbaNieaktywnychEfektow + 1
-      If i <> Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow Then
-        efekty[i][0] = efekty[Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow][0]
-        efekty[i][1] = efekty[Array.GetItemCount(efekty)-1-liczbaNieaktywnychEfektow][1]
-      EndIf
       If efekty[i][0] = 1 Then
         liczbaPrzyspieszen = liczbaPrzyspieszen - 1
         deltaX = deltaX/przyspieszenie
@@ -182,6 +177,12 @@ If gamePlays And gamePaused = "false"Then
         EndFor
           wskaznikTablicyFakeGrup = wskaznikTablicyFakeGrup + 1
         EndIf
+        liczbaAktywnychEfektow = liczbaAktywnychEfektow - 1
+      If i <> liczbaAktywnychEfektow-1 Then
+        efekty[i][0] = efekty[liczbaAktywnychEfektow-1][0]
+        efekty[i][1] = efekty[liczbaAktywnychEfektow-1][1]
+        i = i-1
+      EndIf
      EndIf
   EndFor
       
@@ -402,7 +403,7 @@ Sub OnKeyDown
 EndSub
 
 Sub DodajEfekt
-  dlugoscTablicy = Array.GetItemCount(efekty)-liczbaNieaktywnychEfektow
+  dlugoscTablicy = liczbaAktywnychEfektow 
   efekty[dlugoscTablicy][0] = efektDoDodania
   '5000 - 5 s
   
@@ -473,5 +474,5 @@ Sub DodajEfekt
         EndIf
       EndFor
     EndIf
+    liczbaAktywnychEfektow = liczbaAktywnychEfektow + 1
 EndSub
-  
