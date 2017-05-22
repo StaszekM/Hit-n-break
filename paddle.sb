@@ -12,7 +12,7 @@ ball = Shapes.AddEllipse(ballWidth, ballWidth)
 Shapes.Move(paddle, GraphicsWindow.Width/2 - paddleWidth/2, GraphicsWindow.Height - 12)
 gamePlays = "false"
 gamePaused = "false"
-levelFilePath = "C:\Users\Iwo\Desktop\temp.txt"
+levelFilePath = "C:\Users\uczen\Desktop\temp2.txt"
 pierwszaLinijka = File.ReadLine(levelFilePath, 1)
 GraphicsWindow.MouseMove = OnMouseMove
 score = 0
@@ -131,7 +131,7 @@ If gamePlays And gamePaused = "false"Then
   gh = GraphicsWindow.Height
 
   'Sprawdzanie czy efekty przestają działać
-  For i = 0 To liczbaAktywnychEfektow
+  For i = 0 To Array.GetItemCount(efekty)
     If efekty[i][1] = liczbaIteracji Then
       If efekty[i][0] = 1 Then
         liczbaPrzyspieszen = liczbaPrzyspieszen - 1
